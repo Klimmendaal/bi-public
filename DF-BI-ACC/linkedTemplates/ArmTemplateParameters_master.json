@@ -1,0 +1,51 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "DF-BI-ACC"
+		},
+		"BlobStorage_connectionString": {
+			"value": ""
+		},
+		"LS_Datalake2_accountKey": {
+			"value": ""
+		},
+		"ls_SQLServer_Exact_connectionString": {
+			"value": ""
+		},
+		"ls_SQLServer_Exact_password": {
+			"value": ""
+		},
+		"ls_SQLServer_Hix_connectionString": {
+			"value": ""
+		},
+		"ls_SQLServer_Hix_password": {
+			"value": ""
+		},
+		"ls_SQLServer_az_bi_connectionString": {
+			"value": ""
+		},
+		"AzureKeyVault_properties_typeProperties_baseUrl": {
+			"value": "https://KV-DatafactoryBI.vault.azure.net/"
+		},
+		"HttpServer_Afas_properties_typeProperties_url": {
+			"value": "https://68619.rest.afas.online/ProfitRestServices/connectors/"
+		},
+		"LS_Datalake2_properties_typeProperties_url": {
+			"value": "https://bipowerstorage2.dfs.core.windows.net"
+		},
+		"ls_SQLServer_Exact_properties_typeProperties_userName": {
+			"value": "gkld\\svc-azure-ls-exact"
+		},
+		"ls_SQLServer_Hix_properties_typeProperties_userName": {
+			"value": "gkld\\svc-azure-ls-hix"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

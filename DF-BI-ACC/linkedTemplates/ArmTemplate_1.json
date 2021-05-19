@@ -1,0 +1,795 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "DF-BI-ACC"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Per_Functie')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Personeel"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Functie_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Functiecode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Functieomschrijving",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Kostensoortcode",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "per",
+					"table": "dim_functie"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Per_Medewerker')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Personeel"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Medewerker_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Medewerkernaam",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Geslacht",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Geboortedatum",
+						"type": "date"
+					},
+					{
+						"name": "Personeelsnummer",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "per",
+					"table": "dim_medewerker"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Per_Medewerkersoort')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Personeel"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Medewerkersoort_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Medewerkersoortcode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Medewerkersoortomschrijving",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "per",
+					"table": "dim_medewerkersoort"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Per_contracttype')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Personeel"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Contracttype_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Contracttypecode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Contracttypeomschrijving",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "per",
+					"table": "dim_contracttype"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Per_dienstjaren')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Referentie"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Dienstjaar_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Jaar",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Maand",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Groep1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Groep2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Groep3",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "per",
+					"table": "dim_dienstjaar"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Per_leeftijdsgroep')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Referentie"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Leeftijdsgroep_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Leeftijd",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LeeftijdsgroepVernet",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LeeftijdsgroepPatient",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Groep1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Groep2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Groep3",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "ref",
+					"table": "dim_leeftijdsgroep"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Postcode')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Referentie"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Postcode",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "referentie.xlsx",
+						"folderPath": "tabel referentie",
+						"fileSystem": "referentie"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "PostcodeNummers",
+						"type": "String"
+					},
+					{
+						"name": "Plaats",
+						"type": "String"
+					},
+					{
+						"name": "Gemeente",
+						"type": "String"
+					},
+					{
+						"name": "Provincie",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Ref_Datum')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Referentie"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Datum_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Datum",
+						"type": "date"
+					},
+					{
+						"name": "DatumVoluit",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DagInMaand",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DagInWeek",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Dagnaam",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Maandnaam",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MaandnaamKort",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Maandnummer",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Jaar",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "JaarMaand",
+						"type": "nvarchar"
+					},
+					{
+						"name": "JaarWeek",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IsWerkdag",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IsWeekeind",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IsFeestdag",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "per",
+					"table": "dim_datum"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Ref_Kostenplaats')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Referentie"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Kostenplaats_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Kostenplaatscode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Kostenplaatsomschrijving",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Begindatum",
+						"type": "date"
+					},
+					{
+						"name": "Einddatum",
+						"type": "date"
+					},
+					{
+						"name": "Niveau1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Niveau2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Regio",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Niveau3",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Niveau4",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Locatie",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "ref",
+					"table": "dim_kostenplaats"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Ref_Kostensoort')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Referentie"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "ref",
+					"table": "dim_kostensoort"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Ref_Postcode')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Referentie"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Postcode_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Postcode4",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Woonplaats",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Regio",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Gemeente",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Provincie",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Verzorgingsgebied",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Groep1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Groep2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Groep3",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "ref",
+					"table": "dim_postcode"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STG_AFAS_Kostensoort_functie')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "2_Staging/AFAS"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "kostensoortfunctie",
+						"folderPath": "dim",
+						"fileSystem": "personeel"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STG_AFAS_Looncomponenten')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "2_Staging/AFAS"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "looncomponenten",
+						"folderPath": "dim",
+						"fileSystem": "personeel"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STG_AFAS_Loonverdeling')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "2_Staging/AFAS"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "loonverdeling",
+						"folderPath": "feit",
+						"fileSystem": "personeel"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STG_AFAS_Medewerker')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "2_Staging/AFAS"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "medewerker",
+						"folderPath": "dim",
+						"fileSystem": "personeel"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STG_AFAS_Verzuim')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "2_Staging/AFAS"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "verzuim",
+						"folderPath": "feit",
+						"fileSystem": "personeel"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STG_Exact_Grtbk')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "2_Staging/Exact"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "exact"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/cszislib_arts')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/HIX"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "hix"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/cszislib_arts_specialisme')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/HIX"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "hix"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/cszislib_arts_type')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/HIX"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "hix"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		}
+	]
+}

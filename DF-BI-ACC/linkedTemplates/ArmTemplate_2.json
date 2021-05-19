@@ -1,0 +1,3789 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "DF-BI-ACC"
+		},
+		"ls_SQLServer_Exact_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_SQLServer_Exact'"
+		},
+		"ls_SQLServer_Exact_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_SQLServer_Exact'"
+		},
+		"ls_SQLServer_Hix_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_SQLServer_Hix'"
+		},
+		"ls_SQLServer_Hix_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_SQLServer_Hix'"
+		},
+		"ls_SQLServer_Exact_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "gkld\\svc-azure-ls-exact"
+		},
+		"ls_SQLServer_Hix_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "gkld\\svc-azure-ls-hix"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/cszislib_patient')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/HIX"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "hix"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/formatiebegroting')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Referentie"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Formatiebegroting",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "referentie.xlsx",
+						"folderPath": "tabel referentie",
+						"fileSystem": "referentie"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "kostenplaats",
+						"type": "String"
+					},
+					{
+						"name": "kostensoort",
+						"type": "String"
+					},
+					{
+						"name": "FTE begroot",
+						"type": "String"
+					},
+					{
+						"name": "begin",
+						"type": "String"
+					},
+					{
+						"name": "eind",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_SQLServer_Exact')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_SQLServer_Exact_connectionString')]",
+					"userName": "[parameters('ls_SQLServer_Exact_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_SQLServer_Exact_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "IR-SQL-Klimmendaal",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_SQLServer_Hix')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_SQLServer_Hix_connectionString')]",
+					"userName": "[parameters('ls_SQLServer_Hix_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_SQLServer_Hix_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "IR-SQL-Klimmendaal",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Arts_type')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_Hix",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/HIX"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "CODE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "OMSCHR",
+						"type": "nvarchar"
+					},
+					{
+						"name": "VERVALLEN",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "CSZISLIB_ARTSTYPE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_Hix')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Exact_crediteuren')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_Exact",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Exact"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "crdnr",
+						"type": "char"
+					},
+					{
+						"name": "naam",
+						"type": "varchar"
+					},
+					{
+						"name": "adres1",
+						"type": "varchar"
+					},
+					{
+						"name": "adres2",
+						"type": "varchar"
+					},
+					{
+						"name": "adres3",
+						"type": "varchar"
+					},
+					{
+						"name": "postcode",
+						"type": "varchar"
+					},
+					{
+						"name": "woonpl",
+						"type": "varchar"
+					},
+					{
+						"name": "landcode",
+						"type": "char"
+					},
+					{
+						"name": "crdzk",
+						"type": "char"
+					},
+					{
+						"name": "valcode",
+						"type": "char"
+					},
+					{
+						"name": "telnr",
+						"type": "varchar"
+					},
+					{
+						"name": "faxnr",
+						"type": "varchar"
+					},
+					{
+						"name": "cntpers1",
+						"type": "varchar"
+					},
+					{
+						"name": "mv1",
+						"type": "char"
+					},
+					{
+						"name": "prdcode1",
+						"type": "char"
+					},
+					{
+						"name": "vrlttrs1",
+						"type": "varchar"
+					},
+					{
+						"name": "functie1",
+						"type": "varchar"
+					},
+					{
+						"name": "telnrcp1",
+						"type": "varchar"
+					},
+					{
+						"name": "banknr1",
+						"type": "varchar"
+					},
+					{
+						"name": "banknr2",
+						"type": "varchar"
+					},
+					{
+						"name": "pstbanknrc",
+						"type": "varchar"
+					},
+					{
+						"name": "betwijze",
+						"type": "char"
+					},
+					{
+						"name": "tegreknr",
+						"type": "char"
+					},
+					{
+						"name": "dagbknr",
+						"type": "char"
+					},
+					{
+						"name": "crdtext",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "aandacht",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "categorie",
+						"type": "varchar"
+					},
+					{
+						"name": "kredlimiet",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "autombet",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "betcond",
+						"type": "char"
+					},
+					{
+						"name": "blokkeer",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "klantcode",
+						"type": "char"
+					},
+					{
+						"name": "prijslijst",
+						"type": "varchar"
+					},
+					{
+						"name": "ex_artcode",
+						"type": "char"
+					},
+					{
+						"name": "kortingo",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoutcode",
+						"type": "char"
+					},
+					{
+						"name": "taalcode",
+						"type": "char"
+					},
+					{
+						"name": "saldontvwd",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "saldontvwc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "blznr",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "opensaldo",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "bedrbest",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "land_iso",
+						"type": "char"
+					},
+					{
+						"name": "btw_nummer",
+						"type": "varchar"
+					},
+					{
+						"name": "datumctrl",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "categ_belg",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "statfactor",
+						"type": "char"
+					},
+					{
+						"name": "btwtrans",
+						"type": "char"
+					},
+					{
+						"name": "wijz_btwt",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "stelsel",
+						"type": "char"
+					},
+					{
+						"name": "wijz_stel",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "transact_a",
+						"type": "char"
+					},
+					{
+						"name": "wijz_trs_a",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "transact_b",
+						"type": "char"
+					},
+					{
+						"name": "wijz_trs_b",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "landherk",
+						"type": "char"
+					},
+					{
+						"name": "wijz_herk",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "landoorspr",
+						"type": "char"
+					},
+					{
+						"name": "wijz_oorsp",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "vervoer",
+						"type": "char"
+					},
+					{
+						"name": "wijz_verv",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "plts_ll",
+						"type": "char"
+					},
+					{
+						"name": "wijz_ll",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "intra_lvcd",
+						"type": "char"
+					},
+					{
+						"name": "wijz_levcd",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "trsshpm_cd",
+						"type": "char"
+					},
+					{
+						"name": "wijz_tshpm",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "landabc",
+						"type": "char"
+					},
+					{
+						"name": "wijz_abc",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "int_regio",
+						"type": "char"
+					},
+					{
+						"name": "wijz_regio",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "aant_bstkp",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "kstplcode",
+						"type": "char"
+					},
+					{
+						"name": "bestbev",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "crd_adrnr",
+						"type": "char"
+					},
+					{
+						"name": "geniet_com",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "voornaam",
+						"type": "varchar"
+					},
+					{
+						"name": "telex",
+						"type": "char"
+					},
+					{
+						"name": "verz_op",
+						"type": "char"
+					},
+					{
+						"name": "limiet_bdr",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "maxwis_bdr",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "bet_zkblwi",
+						"type": "char"
+					},
+					{
+						"name": "bet_zkgcd",
+						"type": "char"
+					},
+					{
+						"name": "kostencode",
+						"type": "char"
+					},
+					{
+						"name": "ico_nummer",
+						"type": "char"
+					},
+					{
+						"name": "soort_crd",
+						"type": "char"
+					},
+					{
+						"name": "percentwka",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "sign_datum",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "imocode",
+						"type": "char"
+					},
+					{
+						"name": "participant",
+						"type": "char"
+					},
+					{
+						"name": "fiscode",
+						"type": "varchar"
+					},
+					{
+						"name": "region",
+						"type": "varchar"
+					},
+					{
+						"name": "erklev",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "email",
+						"type": "varchar"
+					},
+					{
+						"name": "internet",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield1",
+						"type": "varchar"
+					},
+					{
+						"name": "invname1",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield2",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield3",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield4",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield5",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield6",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield7",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield8",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield9",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield10",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield16",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield17",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield18",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield19",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield20",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "status",
+						"type": "varchar"
+					},
+					{
+						"name": "syscreated",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "syscreator",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysmodified",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysmodifier",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "timestamp",
+						"type": "timestamp"
+					},
+					{
+						"name": "DocumentID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "centr_account",
+						"type": "char"
+					},
+					{
+						"name": "CompanyType",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "CompanyCode",
+						"type": "char"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Credit"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_Exact')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Exact_debiteuren')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_Exact",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Exact"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "debnr",
+						"type": "char"
+					},
+					{
+						"name": "naam",
+						"type": "varchar"
+					},
+					{
+						"name": "adres1",
+						"type": "varchar"
+					},
+					{
+						"name": "adres2",
+						"type": "varchar"
+					},
+					{
+						"name": "adres3",
+						"type": "varchar"
+					},
+					{
+						"name": "postcode",
+						"type": "varchar"
+					},
+					{
+						"name": "woonpl",
+						"type": "varchar"
+					},
+					{
+						"name": "landcode",
+						"type": "char"
+					},
+					{
+						"name": "debzk",
+						"type": "char"
+					},
+					{
+						"name": "valcode",
+						"type": "char"
+					},
+					{
+						"name": "telnr",
+						"type": "varchar"
+					},
+					{
+						"name": "faxnr",
+						"type": "varchar"
+					},
+					{
+						"name": "cntpers1",
+						"type": "varchar"
+					},
+					{
+						"name": "mv1",
+						"type": "char"
+					},
+					{
+						"name": "prdcode1",
+						"type": "char"
+					},
+					{
+						"name": "vrlttrs1",
+						"type": "varchar"
+					},
+					{
+						"name": "functie1",
+						"type": "varchar"
+					},
+					{
+						"name": "telnrcp1",
+						"type": "varchar"
+					},
+					{
+						"name": "banknr",
+						"type": "varchar"
+					},
+					{
+						"name": "pstbanknrd",
+						"type": "varchar"
+					},
+					{
+						"name": "betwijze",
+						"type": "char"
+					},
+					{
+						"name": "tegreknr",
+						"type": "char"
+					},
+					{
+						"name": "dagbknr",
+						"type": "char"
+					},
+					{
+						"name": "debtext",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "aandacht",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "categorie",
+						"type": "varchar"
+					},
+					{
+						"name": "fakdebnr",
+						"type": "varchar"
+					},
+					{
+						"name": "kredlimiet",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "bether",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "betcond",
+						"type": "char"
+					},
+					{
+						"name": "blokkeer",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "prijslijst",
+						"type": "varchar"
+					},
+					{
+						"name": "ex_artcode",
+						"type": "char"
+					},
+					{
+						"name": "levwijze",
+						"type": "char"
+					},
+					{
+						"name": "korting",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "datlaanm",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "layoutcode",
+						"type": "char"
+					},
+					{
+						"name": "taalcode",
+						"type": "char"
+					},
+					{
+						"name": "saldontvwd",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "saldontvwc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "bedrorder",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "blznr",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "debopensal",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "faktoring",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "land_iso",
+						"type": "char"
+					},
+					{
+						"name": "btw_nummer",
+						"type": "varchar"
+					},
+					{
+						"name": "datumctrl",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "categ_belg",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "statfactor",
+						"type": "char"
+					},
+					{
+						"name": "btwtrans",
+						"type": "char"
+					},
+					{
+						"name": "wijz_btwt",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "stelsel",
+						"type": "char"
+					},
+					{
+						"name": "wijz_stel",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "transact_a",
+						"type": "char"
+					},
+					{
+						"name": "wijz_trs_a",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "transact_b",
+						"type": "char"
+					},
+					{
+						"name": "wijz_trs_b",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "landbest",
+						"type": "char"
+					},
+					{
+						"name": "wijz_best",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "vervoer",
+						"type": "char"
+					},
+					{
+						"name": "wijz_verv",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "plts_ll",
+						"type": "char"
+					},
+					{
+						"name": "wijz_ll",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "intra_lvcd",
+						"type": "char"
+					},
+					{
+						"name": "wijz_levcd",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "trsshpm_cd",
+						"type": "char"
+					},
+					{
+						"name": "wijz_tshpm",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "landabc",
+						"type": "char"
+					},
+					{
+						"name": "wijz_abc",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "int_regio",
+						"type": "char"
+					},
+					{
+						"name": "wijz_regio",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "orderbev",
+						"type": "char"
+					},
+					{
+						"name": "backorders",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "verzamelen",
+						"type": "char"
+					},
+					{
+						"name": "aant_fakkp",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "kstplcode",
+						"type": "char"
+					},
+					{
+						"name": "deb_adrnr",
+						"type": "char"
+					},
+					{
+						"name": "stat_adrnr",
+						"type": "char"
+					},
+					{
+						"name": "stat_print",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "stat_nr",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "stat_datum",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "def_adrcd",
+						"type": "char"
+					},
+					{
+						"name": "def_routcd",
+						"type": "char"
+					},
+					{
+						"name": "def_selcd",
+						"type": "char"
+					},
+					{
+						"name": "def_fkort",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "voornaam",
+						"type": "varchar"
+					},
+					{
+						"name": "telex",
+						"type": "char"
+					},
+					{
+						"name": "verz_op",
+						"type": "char"
+					},
+					{
+						"name": "limiet_bdr",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "maxwis_bdr",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "bet_zkblwi",
+						"type": "char"
+					},
+					{
+						"name": "bet_zkgcd",
+						"type": "char"
+					},
+					{
+						"name": "kostencode",
+						"type": "char"
+					},
+					{
+						"name": "ico_nummer",
+						"type": "char"
+					},
+					{
+						"name": "dagvmnd1",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "dagvmnd2",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "dagvmnd3",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "dagvmnd4",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "dagvmnd5",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "banknr2",
+						"type": "varchar"
+					},
+					{
+						"name": "levy",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "region_cd",
+						"type": "char"
+					},
+					{
+						"name": "fiscode",
+						"type": "varchar"
+					},
+					{
+						"name": "region",
+						"type": "char"
+					},
+					{
+						"name": "represent_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "area",
+						"type": "char"
+					},
+					{
+						"name": "email",
+						"type": "varchar"
+					},
+					{
+						"name": "internet",
+						"type": "varchar"
+					},
+					{
+						"name": "creditcard",
+						"type": "varchar"
+					},
+					{
+						"name": "expirydate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "freefield1",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield2",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield3",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield4",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield5",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield6",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield7",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield8",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield9",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield10",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield16",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield17",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield18",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield19",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield20",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "status",
+						"type": "varchar"
+					},
+					{
+						"name": "invlay",
+						"type": "char"
+					},
+					{
+						"name": "invname1",
+						"type": "varchar"
+					},
+					{
+						"name": "invthreshold",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loc",
+						"type": "char"
+					},
+					{
+						"name": "xvattype",
+						"type": "char"
+					},
+					{
+						"name": "syscreated",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "syscreator",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AccountEmployeeID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CreditabilityScenario",
+						"type": "char"
+					},
+					{
+						"name": "sysmodified",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysmodifier",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "timestamp",
+						"type": "timestamp"
+					},
+					{
+						"name": "DocumentID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "CalculatePenaltyInterest",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "IntermediaryAssociate",
+						"type": "char"
+					},
+					{
+						"name": "SendPenaltyInvoices",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "IntermediaryAssociateID",
+						"type": "char"
+					},
+					{
+						"name": "VATLiability",
+						"type": "char"
+					},
+					{
+						"name": "centr_account",
+						"type": "char"
+					},
+					{
+						"name": "CompanyType",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "CompanyCode",
+						"type": "char"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Debitr"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_Exact')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Exact_gbkmut')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_Exact",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Exact"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "bkjrcode",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "reknr",
+						"type": "char"
+					},
+					{
+						"name": "datum",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "periode",
+						"type": "char"
+					},
+					{
+						"name": "bkstnr",
+						"type": "varchar"
+					},
+					{
+						"name": "dagbknr",
+						"type": "char"
+					},
+					{
+						"name": "oms25",
+						"type": "varchar"
+					},
+					{
+						"name": "bdr_hfl",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "btw_code",
+						"type": "char"
+					},
+					{
+						"name": "btw_bdr_3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "btw_grond",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "tegreknr",
+						"type": "char"
+					},
+					{
+						"name": "debnr",
+						"type": "char"
+					},
+					{
+						"name": "crdnr",
+						"type": "char"
+					},
+					{
+						"name": "kstplcode",
+						"type": "char"
+					},
+					{
+						"name": "kstdrcode",
+						"type": "char"
+					},
+					{
+						"name": "aantal",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "valcode",
+						"type": "char"
+					},
+					{
+						"name": "exvalcode",
+						"type": "char"
+					},
+					{
+						"name": "koers",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "wisselkrs",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "koers3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "bdr_val",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "dbk_verwnr",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "verwerknrl",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "volgnr5",
+						"type": "char"
+					},
+					{
+						"name": "regel",
+						"type": "char"
+					},
+					{
+						"name": "regelcode",
+						"type": "char"
+					},
+					{
+						"name": "storno",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "bkstnr_sub",
+						"type": "varchar"
+					},
+					{
+						"name": "betcond",
+						"type": "char"
+					},
+					{
+						"name": "btwper",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "oorsprong",
+						"type": "char"
+					},
+					{
+						"name": "vlgn_gbk2",
+						"type": "varchar"
+					},
+					{
+						"name": "btw_grval",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "afldat",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "docnumber",
+						"type": "varchar"
+					},
+					{
+						"name": "docdate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "exvalbdr",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "entryorigin",
+						"type": "char"
+					},
+					{
+						"name": "vervdatkrd",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "vervdtkrd2",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "vervdatfak",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "kredbep",
+						"type": "char"
+					},
+					{
+						"name": "bdrkredbep",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "bdrkredbp2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "betaalref",
+						"type": "varchar"
+					},
+					{
+						"name": "stat_nr",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "btw_nummer",
+						"type": "varchar"
+					},
+					{
+						"name": "rapnr",
+						"type": "char"
+					},
+					{
+						"name": "raplist",
+						"type": "char"
+					},
+					{
+						"name": "artcode",
+						"type": "varchar"
+					},
+					{
+						"name": "faktuurnr",
+						"type": "char"
+					},
+					{
+						"name": "bud_vers",
+						"type": "char"
+					},
+					{
+						"name": "syscreated",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "syscreator",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ReminderCount",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysmodified",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ReminderLayout",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LastReminderDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysmodifier",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "BlockItem",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "timestamp",
+						"type": "timestamp"
+					},
+					{
+						"name": "CompanyCode",
+						"type": "char"
+					},
+					{
+						"name": "res_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TransactionType",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CurrencyCode",
+						"type": "char"
+					},
+					{
+						"name": "Rate",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "bankacc",
+						"type": "varchar"
+					},
+					{
+						"name": "AmountCentral",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "VatBaseAmountCentral",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "PaymentMethod",
+						"type": "char"
+					},
+					{
+						"name": "VatAmountCentral",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "CurrencyAliasAc",
+						"type": "char"
+					},
+					{
+						"name": "DocumentID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "facode",
+						"type": "varchar"
+					},
+					{
+						"name": "transtype",
+						"type": "char"
+					},
+					{
+						"name": "transsubtype",
+						"type": "char"
+					},
+					{
+						"name": "freefield1",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield2",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield3",
+						"type": "varchar"
+					},
+					{
+						"name": "freefield4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "project",
+						"type": "varchar"
+					},
+					{
+						"name": "DocAttachmentID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "cmp_wwn",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "warehouse",
+						"type": "char"
+					},
+					{
+						"name": "orderdebtor",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "PayrollSubtype",
+						"type": "char"
+					},
+					{
+						"name": "ReconcileNumber",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "warehouse_location",
+						"type": "char"
+					},
+					{
+						"name": "EntryGuid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "TransactionGuid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "TransactionGuid2",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "Checked",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "Reviewed",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "BankTransactionGUID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "StockTrackingNumber",
+						"type": "char"
+					},
+					{
+						"name": "StartTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "EndTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ReportingDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CashRegisterAccount",
+						"type": "varchar"
+					},
+					{
+						"name": "Original_Quantity",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "comp_code",
+						"type": "char"
+					},
+					{
+						"name": "Selcode",
+						"type": "char"
+					},
+					{
+						"name": "Unitcode",
+						"type": "char"
+					},
+					{
+						"name": "Pricelist",
+						"type": "varchar"
+					},
+					{
+						"name": "Discount",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Shipment",
+						"type": "varchar"
+					},
+					{
+						"name": "IntTransportMethod",
+						"type": "varchar"
+					},
+					{
+						"name": "IntPort",
+						"type": "varchar"
+					},
+					{
+						"name": "IntSystem",
+						"type": "varchar"
+					},
+					{
+						"name": "IntTransA",
+						"type": "varchar"
+					},
+					{
+						"name": "IntStatNr",
+						"type": "varchar"
+					},
+					{
+						"name": "IntStandardCode",
+						"type": "varchar"
+					},
+					{
+						"name": "IntTransShipment",
+						"type": "varchar"
+					},
+					{
+						"name": "IntTransB",
+						"type": "varchar"
+					},
+					{
+						"name": "IntArea",
+						"type": "varchar"
+					},
+					{
+						"name": "IntLandISO",
+						"type": "varchar"
+					},
+					{
+						"name": "IntLandDestOrig",
+						"type": "varchar"
+					},
+					{
+						"name": "IntDeliveryMethod",
+						"type": "varchar"
+					},
+					{
+						"name": "IntStatUnit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "IntWeight",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "IntComplete",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "LinkedLine",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "PayrollCosts",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "TaxCode2",
+						"type": "char"
+					},
+					{
+						"name": "TaxCode3",
+						"type": "char"
+					},
+					{
+						"name": "TaxCode4",
+						"type": "char"
+					},
+					{
+						"name": "TaxCode5",
+						"type": "char"
+					},
+					{
+						"name": "TaxBasis2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TaxBasis3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TaxBasis4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TaxBasis5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TaxAmount2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TaxAmount3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TaxAmount4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TaxAmount5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "StatisticalFactor",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "IntLandAssembly",
+						"type": "varchar"
+					},
+					{
+						"name": "backflush",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "LastReminderLayout",
+						"type": "varchar"
+					},
+					{
+						"name": "Correction",
+						"type": "char"
+					},
+					{
+						"name": "IBTDeliveryNr",
+						"type": "varchar"
+					},
+					{
+						"name": "Routing",
+						"type": "varchar"
+					},
+					{
+						"name": "Step",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Reasoncode",
+						"type": "varchar"
+					},
+					{
+						"name": "TransactionNumber",
+						"type": "varchar"
+					},
+					{
+						"name": "Type",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "Status",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "UniqueSeqNo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CompleteOperation",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "ImSerialNr",
+						"type": "varchar"
+					},
+					{
+						"name": "ImportationNr",
+						"type": "char"
+					},
+					{
+						"name": "RevaluationCurrency",
+						"type": "char"
+					},
+					{
+						"name": "LineType",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "Operation",
+						"type": "varchar"
+					},
+					{
+						"name": "ExternalNumber",
+						"type": "varchar"
+					},
+					{
+						"name": "ExternalNumberRecordID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "RevaluationRate",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "PositionNumber",
+						"type": "varchar"
+					},
+					{
+						"name": "StatementDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "StatementNumber",
+						"type": "char"
+					},
+					{
+						"name": "IntrastatEnabled",
+						"type": "bit"
+					},
+					{
+						"name": "AllocationType",
+						"type": "char"
+					},
+					{
+						"name": "OfficialExchangeRate",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "OfficialAmountDC",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "OfficialBasisDC",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "ScheduledResources",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ManualStartLock",
+						"type": "bit"
+					},
+					{
+						"name": "ManualStopLock",
+						"type": "bit"
+					},
+					{
+						"name": "FirmZoneLock",
+						"type": "bit"
+					},
+					{
+						"name": "Division",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "OperationQuantityComplete",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TaxDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "gbkmut"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_Exact')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Exact_grtbk')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Kostensoorten",
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_Exact",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Exact"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "reknr",
+						"type": "char"
+					},
+					{
+						"name": "oms25_0",
+						"type": "varchar"
+					},
+					{
+						"name": "oms25_1",
+						"type": "varchar"
+					},
+					{
+						"name": "oms25_2",
+						"type": "varchar"
+					},
+					{
+						"name": "oms25_3",
+						"type": "varchar"
+					},
+					{
+						"name": "oms25_4",
+						"type": "varchar"
+					},
+					{
+						"name": "bal_vw",
+						"type": "char"
+					},
+					{
+						"name": "debcrd",
+						"type": "char"
+					},
+					{
+						"name": "subtotrek",
+						"type": "char"
+					},
+					{
+						"name": "gbktext",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "btw_code",
+						"type": "char"
+					},
+					{
+						"name": "projectrek",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "kstplrek",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "kstdrrek",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "aantallen",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "omzrek",
+						"type": "char"
+					},
+					{
+						"name": "type_rek",
+						"type": "char"
+					},
+					{
+						"name": "mineraal",
+						"type": "char"
+					},
+					{
+						"name": "blokkeer",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "herwaard",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "verdicht",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "blznr",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "perc_naf",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "reknr_naf",
+						"type": "char"
+					},
+					{
+						"name": "perc_prive",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "reknr_priv",
+						"type": "char"
+					},
+					{
+						"name": "bkjrcode",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "bkjr_mut",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "afletteren",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "aflet_mut",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "act_rek",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "type_com",
+						"type": "char"
+					},
+					{
+						"name": "std_kstpl",
+						"type": "char"
+					},
+					{
+						"name": "std_kstdr",
+						"type": "char"
+					},
+					{
+						"name": "aandacht",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "wisselrek",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "type_rek2",
+						"type": "char"
+					},
+					{
+						"name": "wijz_reg",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "reknr_l",
+						"type": "char"
+					},
+					{
+						"name": "prnbifunc",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "afsreknr",
+						"type": "char"
+					},
+					{
+						"name": "scheme_type",
+						"type": "char"
+					},
+					{
+						"name": "analyt_acc",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "reknr_2",
+						"type": "char"
+					},
+					{
+						"name": "freefield1",
+						"type": "char"
+					},
+					{
+						"name": "freefield2",
+						"type": "char"
+					},
+					{
+						"name": "freefield3",
+						"type": "char"
+					},
+					{
+						"name": "freefield4",
+						"type": "char"
+					},
+					{
+						"name": "freefield5",
+						"type": "char"
+					},
+					{
+						"name": "freefield6",
+						"type": "char"
+					},
+					{
+						"name": "freefield7",
+						"type": "char"
+					},
+					{
+						"name": "freefield8",
+						"type": "char"
+					},
+					{
+						"name": "freefield9",
+						"type": "char"
+					},
+					{
+						"name": "freefield10",
+						"type": "char"
+					},
+					{
+						"name": "freefield11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "freefield16",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield17",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield18",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield19",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "freefield20",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "statusdate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "centr_account",
+						"type": "char"
+					},
+					{
+						"name": "IntBalanceDebit",
+						"type": "char"
+					},
+					{
+						"name": "subclass_pass",
+						"type": "char"
+					},
+					{
+						"name": "OffBalSubClassCredit",
+						"type": "char"
+					},
+					{
+						"name": "IsPersonalAccount",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "TypeAdjustmentInflation",
+						"type": "char"
+					},
+					{
+						"name": "DocumentID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "alternativeledger",
+						"type": "char"
+					},
+					{
+						"name": "UseResource",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "UseProject",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "UseItem",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "UseDebtor",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "UseCreditor",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "UseIntercompany",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "CompanyCode",
+						"type": "char"
+					},
+					{
+						"name": "AccountCode",
+						"type": "char"
+					},
+					{
+						"name": "AccountReportCategory",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AccountConversionType",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Class_01",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_02",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_03",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_04",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_05",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_06",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_07",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_08",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_09",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_10",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_11",
+						"type": "varchar"
+					},
+					{
+						"name": "Class_12",
+						"type": "varchar"
+					},
+					{
+						"name": "UseIBActive",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "UseCostcenterAllocation",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "AssociateGL",
+						"type": "char"
+					},
+					{
+						"name": "ShowNotes",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "ExcludeVATListing",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "Division",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "syscreated",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "syscreator",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysmodified",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysmodifier",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "timestamp",
+						"type": "timestamp"
+					},
+					{
+						"name": "MSICCode",
+						"type": "varchar"
+					},
+					{
+						"name": "TaxonomyCode",
+						"type": "varchar"
+					},
+					{
+						"name": "TariffCode",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "grtbk"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_Exact')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Patient')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_Hix",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/HIX"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "PATIENTNR",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ACHTERNAAM",
+						"type": "nvarchar"
+					},
+					{
+						"name": "VOORVOEGA",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MEISJESNAA",
+						"type": "nvarchar"
+					},
+					{
+						"name": "VOORVOEGM",
+						"type": "nvarchar"
+					},
+					{
+						"name": "VOORLETTER",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ROEPNAAM",
+						"type": "nvarchar"
+					},
+					{
+						"name": "VOORNAAM",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Pseudonym",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PseudonymEndDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PronounCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TITELS",
+						"type": "nvarchar"
+					},
+					{
+						"name": "GESLACHT",
+						"type": "nvarchar"
+					},
+					{
+						"name": "GEBDAT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "GEBOORTETIJD",
+						"type": "nvarchar"
+					},
+					{
+						"name": "GEBDATCOR",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "GEBPLAATS",
+						"type": "nvarchar"
+					},
+					{
+						"name": "GEBLAND",
+						"type": "nvarchar"
+					},
+					{
+						"name": "INSTANTIE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MERGED",
+						"type": "bit"
+					},
+					{
+						"name": "Blok",
+						"type": "bit"
+					},
+					{
+						"name": "BSN",
+						"type": "nvarchar"
+					},
+					{
+						"name": "HUISARTS",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TANDARTS",
+						"type": "nvarchar"
+					},
+					{
+						"name": "APOTHEEK",
+						"type": "nvarchar"
+					},
+					{
+						"name": "VERZVORM",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IDDATUM",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "IDTYPE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IDNUMMER",
+						"type": "nvarchar"
+					},
+					{
+						"name": "WIDGELIJK",
+						"type": "bit"
+					},
+					{
+						"name": "WIDDATUM",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "BSNDATUM",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "EXTYPE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "EXDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "VERBLADRCODE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "GEBDATRES",
+						"type": "nvarchar"
+					},
+					{
+						"name": "HOOFDVERZ",
+						"type": "nvarchar"
+					},
+					{
+						"name": "INGANGSDAT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "REKENINGNR",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DEBITEURNR",
+						"type": "nvarchar"
+					},
+					{
+						"name": "BICCODE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PATTYPE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PATCODES",
+						"type": "nvarchar"
+					},
+					{
+						"name": "UITGDATUM",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "OVERLEDEN",
+						"type": "bit"
+					},
+					{
+						"name": "OVERLDAT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "OVERLTIJD",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MEERLING",
+						"type": "bit"
+					},
+					{
+						"name": "EENLING",
+						"type": "bit"
+					},
+					{
+						"name": "MEMO",
+						"type": "nvarchar"
+					},
+					{
+						"name": "BEREIKBAARHEID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "BURGSTAAT",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TAAL",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RELIGIE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "GEESTVERZ",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PONSDAT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PONSAANT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TMPREG",
+						"type": "bit"
+					},
+					{
+						"name": "MUTDAT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "MUTTIJD",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MUTWIE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "USERCODE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MUTBRON",
+						"type": "nvarchar"
+					},
+					{
+						"name": "KOPPELNR",
+						"type": "nvarchar"
+					},
+					{
+						"name": "KOPPELSTAT",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ADRES",
+						"type": "nvarchar"
+					},
+					{
+						"name": "HUISNR",
+						"type": "nvarchar"
+					},
+					{
+						"name": "POSTCODE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "WOONPLAATS",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LAND",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PARTVERZ",
+						"type": "nvarchar"
+					},
+					{
+						"name": "AANVVERZ",
+						"type": "nvarchar"
+					},
+					{
+						"name": "NRZIEKENFO",
+						"type": "nvarchar"
+					},
+					{
+						"name": "NRPARTVERZ",
+						"type": "nvarchar"
+					},
+					{
+						"name": "NRAANVVERZ",
+						"type": "nvarchar"
+					},
+					{
+						"name": "KLASSEZIEK",
+						"type": "nvarchar"
+					},
+					{
+						"name": "KLASSEPART",
+						"type": "nvarchar"
+					},
+					{
+						"name": "KLASSEAANV",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ZIEKENFOND",
+						"type": "nvarchar"
+					},
+					{
+						"name": "NAAMGEBR",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SNTYPE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ExclWeb",
+						"type": "bit"
+					},
+					{
+						"name": "IsTestPatient",
+						"type": "bit"
+					},
+					{
+						"name": "GEBLANDV",
+						"type": "nvarchar"
+					},
+					{
+						"name": "GEBLANDM",
+						"type": "nvarchar"
+					},
+					{
+						"name": "INGEZETENE",
+						"type": "nvarchar"
+					},
+					{
+						"name": "AFWIJKENDEFOTO",
+						"type": "nvarchar"
+					},
+					{
+						"name": "HEEFTAFWIJKFOTO",
+						"type": "bit"
+					},
+					{
+						"name": "TELEFOON1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TYPETEL1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TELEFOON2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TYPETEL2",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "PATIENT_PATIENT"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_Hix')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_personeel_dim_cao')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Personeel"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Loonverdeling",
+								"type": "DatasetReference"
+							},
+							"name": "CAO"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Per_CAO",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "Aggregate1"
+						},
+						{
+							"name": "DerivedColumn1"
+						}
+					],
+					"script": "source(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tMedewerker as string,\n\t\tDV_nr as long,\n\t\tDV_Begin as string,\n\t\tDV_Eind as string,\n\t\tVlgnr_contract as long,\n\t\tContr_Begin as string,\n\t\tContr_Eind as string,\n\t\tType_contract_code as string,\n\t\tType_contract as string,\n\t\tSoort_medewerker_code as string,\n\t\tSoort_Medewerker as string,\n\t\tDienstbetrekking_code as string,\n\t\tDienstbetrekking as string,\n\t\tFunctie_Begin as string,\n\t\tFunctie_Eind as string,\n\t\tHoofdkostenplaats as string,\n\t\tFormatie_Begin as string,\n\t\tFormatie_Eind as string,\n\t\tParttimePerc as double,\n\t\tUren_week as double,\n\t\tDagen_week as double,\n\t\tKostenplaats as string,\n\t\tOE as string,\n\t\tLoonv_perc as double,\n\t\tFunctie_code as string,\n\t\tFunctie_omschr as string,\n\t\tWerkgever_code as string,\n\t\tWerkgever_naam as string,\n\t\tSalaris_begin as string,\n\t\tSalaris_eind as string,\n\t\tCao_code_regeling as string,\n\t\tCAO_omschrijving as string,\n\t\tHoofd_Functie_code as string,\n\t\tHoofd_Functie_Omschr as string,\n\t\tArbeidsvoorwaarde_code as string,\n\t\tBegindatum_contractketen as string,\n\t\tBegindatum_organigram as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> CAO\nCAO select(mapColumn(\n\t\tCao_code_regeling,\n\t\tCAO_omschrijving\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 aggregate(groupBy(Cao_code_regeling,\n\t\tCAO_omschrijving),\n\tcolumn1 = count(Cao_code_regeling)) ~> Aggregate1\nAggregate1 derive(CAO_key = Cao_code_regeling) ~> DerivedColumn1\nDerivedColumn1 sink(input(\n\t\tCAO_key as integer,\n\t\tCAOcode as integer,\n\t\tCAOomschrijving as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tCAO_key,\n\t\tCAOcode = Cao_code_regeling,\n\t\tCAOomschrijving = CAO_omschrijving\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_personeel_dim_contract')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Personeel"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Loonverdeling",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Per_contracttype",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "Aggregate1"
+						},
+						{
+							"name": "DerivedColumn1"
+						}
+					],
+					"script": "source(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tMedewerker as string,\n\t\tDV_nr as long,\n\t\tDV_Begin as string,\n\t\tDV_Eind as string,\n\t\tVlgnr_contract as long,\n\t\tContr_Begin as string,\n\t\tContr_Eind as string,\n\t\tType_contract_code as string,\n\t\tType_contract as string,\n\t\tSoort_medewerker_code as string,\n\t\tSoort_Medewerker as string,\n\t\tDienstbetrekking_code as string,\n\t\tDienstbetrekking as string,\n\t\tFunctie_Begin as string,\n\t\tFunctie_Eind as string,\n\t\tHoofdkostenplaats as string,\n\t\tFormatie_Begin as string,\n\t\tFormatie_Eind as string,\n\t\tParttimePerc as double,\n\t\tUren_week as double,\n\t\tDagen_week as double,\n\t\tKostenplaats as string,\n\t\tOE as string,\n\t\tLoonv_perc as double,\n\t\tFunctie_code as string,\n\t\tFunctie_omschr as string,\n\t\tWerkgever_code as string,\n\t\tWerkgever_naam as string,\n\t\tSalaris_begin as string,\n\t\tSalaris_eind as string,\n\t\tCao_code_regeling as string,\n\t\tCAO_omschrijving as string,\n\t\tHoofd_Functie_code as string,\n\t\tHoofd_Functie_Omschr as string,\n\t\tArbeidsvoorwaarde_code as string,\n\t\tBegindatum_contractketen as string,\n\t\tBegindatum_organigram as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> source1\nsource1 select(mapColumn(\n\t\tType_contract_code,\n\t\tType_contract\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 aggregate(groupBy(Type_contract_code,\n\t\tType_contract),\n\tColumntotal = count(Type_contract_code)) ~> Aggregate1\nAggregate1 derive(Type_contract_key = Type_contract_code) ~> DerivedColumn1\nDerivedColumn1 sink(input(\n\t\tContracttype_key as string,\n\t\tContracttypecode as string,\n\t\tContracttypeomschrijving as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tContracttype_key = Type_contract_key,\n\t\tContracttypecode = Type_contract_code,\n\t\tContracttypeomschrijving = Type_contract\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_personeel_dim_functie')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Personeel"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Kostensoort_functie",
+								"type": "DatasetReference"
+							},
+							"name": "AfasKostensoort"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Per_Functie",
+								"type": "DatasetReference"
+							},
+							"name": "DimFunctie"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tSpecifieke_bron_code as string,\n\t\tSpecifieke_bron_omschrijving as string,\n\t\tVaste_waarde as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['dim/kostensoortfunctie']) ~> AfasKostensoort\nAfasKostensoort sink(input(\n\t\tFunctie_key as string,\n\t\tFunctiecode as string,\n\t\tFunctieomschrijving as string,\n\t\tKostensoortcode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tFunctie_key = Specifieke_bron_code,\n\t\tFunctiecode = Specifieke_bron_code,\n\t\tFunctieomschrijving = Specifieke_bron_omschrijving,\n\t\tKostensoortcode = Vaste_waarde\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> DimFunctie"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_personeel_dim_medewerker')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Personeel"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Medewerker",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Per_Medewerker",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DerivedColumn1"
+						}
+					],
+					"script": "source(output(\n\t\tMedewerker as string,\n\t\tRoepnaam as string,\n\t\tVoornaam as string,\n\t\tVoorletters as string,\n\t\tVoorvoegsel as string,\n\t\tAchternaam as string,\n\t\tVoorv_geb_naam as string,\n\t\tGeboortenaam as string,\n\t\tVoorvoegsel_partner as string,\n\t\tGeb_naam_partner as string,\n\t\tNaamgebruik_code as string,\n\t\tNaamgebruik as string,\n\t\tGeslacht_code as string,\n\t\tGeslacht as string,\n\t\tNationaliteit_code as string,\n\t\tNationaliteit as string,\n\t\tGeboortedatum as timestamp,\n\t\tGeboorteland as string,\n\t\tGeboorteplaats as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['dim/medewerker']) ~> source1\nsource1 derive(Medewerker_key = Medewerker) ~> DerivedColumn1\nDerivedColumn1 sink(input(\n\t\tMedewerker_key as string,\n\t\tMedewerkernaam as string,\n\t\tGeslacht as string,\n\t\tGeboortedatum as date,\n\t\tPersoneelsnummer as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: true,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tMedewerker_key,\n\t\tMedewerkernaam = Achternaam,\n\t\tGeslacht,\n\t\tGeboortedatum,\n\t\tPersoneelsnummer = Medewerker\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_personeel_dim_medewerkersoort')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Personeel"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Loonverdeling",
+								"type": "DatasetReference"
+							},
+							"name": "loonverdeling"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Per_Medewerkersoort",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "selecteerkolommen"
+						},
+						{
+							"name": "Aggregate1"
+						},
+						{
+							"name": "DerivedColumn1"
+						}
+					],
+					"script": "source(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tMedewerker as string,\n\t\tDV_nr as long,\n\t\tDV_Begin as string,\n\t\tDV_Eind as string,\n\t\tVlgnr_contract as long,\n\t\tContr_Begin as string,\n\t\tContr_Eind as string,\n\t\tType_contract_code as string,\n\t\tType_contract as string,\n\t\tSoort_medewerker_code as string,\n\t\tSoort_Medewerker as string,\n\t\tDienstbetrekking_code as string,\n\t\tDienstbetrekking as string,\n\t\tFunctie_Begin as string,\n\t\tFunctie_Eind as string,\n\t\tHoofdkostenplaats as string,\n\t\tFormatie_Begin as string,\n\t\tFormatie_Eind as string,\n\t\tParttimePerc as double,\n\t\tUren_week as double,\n\t\tDagen_week as double,\n\t\tKostenplaats as string,\n\t\tOE as string,\n\t\tLoonv_perc as double,\n\t\tFunctie_code as string,\n\t\tFunctie_omschr as string,\n\t\tWerkgever_code as string,\n\t\tWerkgever_naam as string,\n\t\tSalaris_begin as string,\n\t\tSalaris_eind as string,\n\t\tCao_code_regeling as string,\n\t\tCAO_omschrijving as string,\n\t\tHoofd_Functie_code as string,\n\t\tHoofd_Functie_Omschr as string,\n\t\tArbeidsvoorwaarde_code as string,\n\t\tBegindatum_contractketen as string,\n\t\tBegindatum_organigram as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> loonverdeling\nloonverdeling select(mapColumn(\n\t\tSoort_medewerker_code,\n\t\tSoort_Medewerker\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> selecteerkolommen\nselecteerkolommen aggregate(groupBy(Soort_medewerker_code,\n\t\tSoort_Medewerker),\n\taantal = count(Soort_medewerker_code)) ~> Aggregate1\nAggregate1 derive(soort_medeweker_code_key = Soort_medewerker_code) ~> DerivedColumn1\nDerivedColumn1 sink(input(\n\t\tMedewerkersoort_key as string,\n\t\tMedewerkersoortcode as string,\n\t\tMedewerkersoortomschrijving as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tMedewerkersoort_key = soort_medeweker_code_key,\n\t\tMedewerkersoortcode = Soort_medewerker_code,\n\t\tMedewerkersoortomschrijving = Soort_Medewerker\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_personeel_feit_begroting')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Personeel"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "formatiebegroting",
+								"type": "DatasetReference"
+							},
+							"name": "Formatiebegroting"
+						},
+						{
+							"dataset": {
+								"referenceName": "Ref_Datum",
+								"type": "DatasetReference"
+							},
+							"name": "maanden"
+						},
+						{
+							"dataset": {
+								"referenceName": "Ref_Kostenplaats",
+								"type": "DatasetReference"
+							},
+							"name": "RefKostenplaats"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Feit_Begroting",
+								"type": "DatasetReference"
+							},
+							"name": "DMFeitBegroting"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AGGMaanden"
+						},
+						{
+							"name": "MaandSplit"
+						},
+						{
+							"name": "DCVelden"
+						},
+						{
+							"name": "Kostenplaats"
+						}
+					],
+					"script": "source(output(\n\t\tkostenplaats as string,\n\t\tkostensoort as string,\n\t\t{FTE begroot} as string,\n\t\tbegin as date,\n\t\teind as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['tabel referentie/referentie.xlsx']) ~> Formatiebegroting\nsource(output(\n\t\tDatum_key as integer,\n\t\tDatum as date,\n\t\tDatumVoluit as string,\n\t\tDagInMaand as integer,\n\t\tDagInWeek as integer,\n\t\tDagnaam as string,\n\t\tMaandnaam as string,\n\t\tMaandnaamKort as string,\n\t\tMaandnummer as integer,\n\t\tJaar as integer,\n\t\tJaarMaand as string,\n\t\tJaarWeek as string,\n\t\tIsWerkdag as integer,\n\t\tIsWeekeind as integer,\n\t\tIsFeestdag as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> maanden\nsource(output(\n\t\tKostenplaats_key as string,\n\t\tKostenplaatscode as string,\n\t\tKostenplaatsomschrijving as string,\n\t\tBegindatum as date,\n\t\tEinddatum as date,\n\t\tNiveau1 as string,\n\t\tNiveau2 as string,\n\t\tRegio as string,\n\t\tNiveau3 as string,\n\t\tNiveau4 as string,\n\t\tLocatie as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> RefKostenplaats\nmaanden aggregate(groupBy(Jaar,\n\t\tMaandnummer),\n\tmin_datum = min(Datum),\n\t\tmax_datum = max(Datum),\n\t\tDatum_key = min(Datum_key)) ~> AGGMaanden\nFormatiebegroting, AGGMaanden join(begin <= max_datum\n\t&& eind >= min_datum,\n\tjoinType:'inner',\n\tbroadcast: 'both')~> MaandSplit\nMaandSplit derive(Kostensoort_key = kostensoort,\n\t\tFTEBegroot = toDecimal({FTE begroot},18,3)) ~> DCVelden\nDCVelden, RefKostenplaats join(min_datum <= Einddatum\n\t&& min_datum >= Begindatum\n\t&& kostenplaats == Kostenplaatscode,\n\tjoinType:'left',\n\tbroadcast: 'both')~> Kostenplaats\nKostenplaats sink(input(\n\t\tKostenplaats_key as string,\n\t\tKostensoort_key as string,\n\t\tPeriode_key as integer,\n\t\tFTEBegroot as decimal(18,2),\n\t\tfeit_begrotingid as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tKostenplaats_key,\n\t\tKostensoort_key,\n\t\tPeriode_key = Datum_key,\n\t\tFTEBegroot\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> DMFeitBegroting"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/formatiebegroting')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_personeel_feit_formatie')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Personeel"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Loonverdeling",
+								"type": "DatasetReference"
+							},
+							"name": "STGAFASLoonverdeling"
+						},
+						{
+							"dataset": {
+								"referenceName": "Ref_Datum",
+								"type": "DatasetReference"
+							},
+							"name": "RefDatum"
+						},
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Medewerker",
+								"type": "DatasetReference"
+							},
+							"name": "PerMedewerker"
+						},
+						{
+							"dataset": {
+								"referenceName": "Ref_Kostenplaats",
+								"type": "DatasetReference"
+							},
+							"name": "RefKostenplaats"
+						},
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Verzuim",
+								"type": "DatasetReference"
+							},
+							"name": "Verzuim"
+						},
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Verzuim",
+								"type": "DatasetReference"
+							},
+							"name": "VerzuimVolgenderegel"
+						},
+						{
+							"dataset": {
+								"referenceName": "STG_AFAS_Looncomponenten",
+								"type": "DatasetReference"
+							},
+							"name": "Looncomponenten"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Feit_Formatie",
+								"type": "DatasetReference"
+							},
+							"name": "Formatie"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ExpandRegels"
+						},
+						{
+							"name": "AGGMaanden"
+						},
+						{
+							"name": "DCDatums"
+						},
+						{
+							"name": "DCPeriodekey"
+						},
+						{
+							"name": "DCMeetwaarden"
+						},
+						{
+							"name": "DCNulls"
+						},
+						{
+							"name": "Filter1"
+						},
+						{
+							"name": "DCBerekeningKey"
+						},
+						{
+							"name": "LookupMedewerker"
+						},
+						{
+							"name": "JoinKostenplaats"
+						},
+						{
+							"name": "VerzuimInclEinddatum"
+						},
+						{
+							"name": "VerzuimsetInclEinddatum"
+						},
+						{
+							"name": "VerzuimSubset"
+						},
+						{
+							"name": "VerzuimMaandSplit"
+						},
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "DCZiektedagen"
+						},
+						{
+							"name": "DCNull"
+						},
+						{
+							"name": "FilterOpBegindatum"
+						},
+						{
+							"name": "DCMeetwaardenFTE"
+						},
+						{
+							"name": "AGGMeetwaarden"
+						},
+						{
+							"name": "JoinVerzuimFTE"
+						},
+						{
+							"name": "DCFTEVerzuimMW"
+						}
+					],
+					"script": "source(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tMedewerker as string,\n\t\tDV_nr as long,\n\t\tDV_Begin as string,\n\t\tDV_Eind as string,\n\t\tVlgnr_contract as long,\n\t\tContr_Begin as string,\n\t\tContr_Eind as string,\n\t\tType_contract_code as string,\n\t\tType_contract as string,\n\t\tSoort_medewerker_code as string,\n\t\tSoort_Medewerker as string,\n\t\tDienstbetrekking_code as string,\n\t\tDienstbetrekking as string,\n\t\tFunctie_Begin as string,\n\t\tFunctie_Eind as string,\n\t\tHoofdkostenplaats as string,\n\t\tFormatie_Begin as string,\n\t\tFormatie_Eind as string,\n\t\tParttimePerc as double,\n\t\tUren_week as double,\n\t\tDagen_week as double,\n\t\tKostenplaats as string,\n\t\tOE as string,\n\t\tLoonv_perc as double,\n\t\tFunctie_code as string,\n\t\tFunctie_omschr as string,\n\t\tWerkgever_code as string,\n\t\tWerkgever_naam as string,\n\t\tSalaris_begin as string,\n\t\tSalaris_eind as string,\n\t\tCao_code_regeling as string,\n\t\tCAO_omschrijving as string,\n\t\tHoofd_Functie_code as string,\n\t\tHoofd_Functie_Omschr as string,\n\t\tArbeidsvoorwaarde_code as string,\n\t\tBegindatum_contractketen as string,\n\t\tBegindatum_organigram as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['feit/loonverdeling']) ~> STGAFASLoonverdeling\nsource(output(\n\t\tDatum_key as integer,\n\t\tDatum as date,\n\t\tDatumVoluit as string,\n\t\tDagInMaand as integer,\n\t\tDagInWeek as integer,\n\t\tDagnaam as string,\n\t\tMaandnaam as string,\n\t\tMaandnaamKort as string,\n\t\tMaandnummer as integer,\n\t\tJaar as integer,\n\t\tJaarMaand as string,\n\t\tJaarWeek as string,\n\t\tIsWerkdag as integer,\n\t\tIsWeekeind as integer,\n\t\tIsFeestdag as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> RefDatum\nsource(output(\n\t\tMedewerker as string,\n\t\tRoepnaam as string,\n\t\tVoornaam as string,\n\t\tVoorletters as string,\n\t\tVoorvoegsel as string,\n\t\tAchternaam as string,\n\t\tGeboortenaam_apart_vastleggen as boolean,\n\t\tVoorv_geb_naam as string,\n\t\tGeboortenaam as string,\n\t\tVoorvoegsel_partner as string,\n\t\tGeb_naam_partner as string,\n\t\tNaamgebruik_code as string,\n\t\tNaamgebruik as string,\n\t\tGeslacht_code as string,\n\t\tGeslacht as string,\n\t\tNationaliteit_code as string,\n\t\tNationaliteit as string,\n\t\tGeboortedatum as string,\n\t\tGeboorteland as string,\n\t\tGeboorteplaats as string,\n\t\tBSN as string,\n\t\tBurgerlijke_staat_code as string,\n\t\tBurgerlijke_staat as string,\n\t\tHuwelijksdatum as string,\n\t\tDatum_scheiding as timestamp,\n\t\tOverlijdensdatum as timestamp,\n\t\tTelefoonnr_prive as string,\n\t\tMobiel_werk as string,\n\t\tMobiel_prive as string,\n\t\t{E-mail_prive} as string,\n\t\tAchternaam__init_voorvoegsel__roepnaam_ as string,\n\t\tStraat as string,\n\t\tHuisnummer as long,\n\t\tToev_aan_huisnr as string,\n\t\tPostcode as string,\n\t\tWoonplaats as string,\n\t\tLand as string,\n\t\tUPN as string,\n\t\t{E-mail_werk} as string,\n\t\tskip as long,\n\t\ttake as long\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['dim/medewerker']) ~> PerMedewerker\nsource(output(\n\t\tKostenplaats_key as string,\n\t\tKostenplaatscode as string,\n\t\tKostenplaatsomschrijving as string,\n\t\tBegindatum as date,\n\t\tEinddatum as date,\n\t\tNiveau1 as string,\n\t\tNiveau2 as string,\n\t\tRegio as string,\n\t\tNiveau3 as string,\n\t\tNiveau4 as string,\n\t\tLocatie as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> RefKostenplaats\nsource(output(\n\t\tMedewerker as string,\n\t\tNaam as long,\n\t\tBegindatumVerzuimmelding as timestamp,\n\t\tVerzuimverloopDatum as timestamp,\n\t\tEinddatum_verzuim as timestamp,\n\t\tVerzuimsoortCode as string,\n\t\tVerzuimsoortOmschrijving as string,\n\t\tAanwezigheidsPercentage as double,\n\t\tAanwezigheidsPercentage_AT as double,\n\t\tDatum_uit_dienst as timestamp,\n\t\tSoort_Medewerker as string,\n\t\tReden_verzuim as string,\n\t\tVangnetregeling as boolean,\n\t\tBegindatum_doorlopend_verzuim as timestamp,\n\t\tDoorlopend_verzuim as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['feit/verzuim']) ~> Verzuim\nsource(output(\n\t\tMedewerker as string,\n\t\tNaam as long,\n\t\tBegindatumVerzuimmelding as timestamp,\n\t\tVerzuimverloopDatum as timestamp,\n\t\tEinddatum_verzuim as timestamp,\n\t\tVerzuimsoortCode as string,\n\t\tVerzuimsoortOmschrijving as string,\n\t\tAanwezigheidsPercentage as double,\n\t\tAanwezigheidsPercentage_AT as double,\n\t\tDatum_uit_dienst as timestamp,\n\t\tSoort_Medewerker as string,\n\t\tReden_verzuim as string,\n\t\tVangnetregeling as boolean,\n\t\tBegindatum_doorlopend_verzuim as timestamp,\n\t\tDoorlopend_verzuim as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['feit/verzuim']) ~> VerzuimVolgenderegel\nsource(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tFunctie as string,\n\t\tOrg_eenheid as string,\n\t\tMedewerker as string,\n\t\tDienstverband as long,\n\t\tKostenplaats as string,\n\t\tKostenplaats_sal as string,\n\t\tKostendrager as string,\n\t\tJaar as long,\n\t\tPeriode as long,\n\t\tCao_code as string,\n\t\tLooncomponent as long,\n\t\tOmschrijving_looncomponent as string,\n\t\tBedrag as double,\n\t\tWerkgever_code as string,\n\t\tEinddatum_contract as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['dim/looncomponenten']) ~> Looncomponenten\nDCNulls, DCPeriodekey join(BegindatumSalaris <= max_datum\n\t&& EinddatumSalaris >= min_datum,\n\tjoinType:'left',\n\tbroadcast: 'both')~> ExpandRegels\nRefDatum aggregate(groupBy(Jaar,\n\t\tMaandnummer),\n\tmin_datum = min(Datum),\n\t\tmax_datum = max(Datum),\n\t\tdagen_in_maand = count(Datum_key)) ~> AGGMaanden\nFilter1 derive(BegindatumSalaris = toDate(left(Salaris_begin,10),'yyyy-MM-dd'),\n\t\tEinddatumSalaris = toDate(left(Salaris_eind,10),'yyyy-MM-dd'),\n\t\tBegindatum_key = toInteger(left(Salaris_begin,4) + substring(Salaris_begin,6,2) + substring(Salaris_begin,9,2)),\n\t\tEinddatum_key = toInteger(left(Salaris_eind,4) + substring(Salaris_eind,6,2) + substring(Salaris_eind,9,2)),\n\t\tDV_Begindatum = toDate(left(DV_Begin,10),'yyyy-MM-dd'),\n\t\tDV_Einddatum = toDate(left(DV_Eind,10),'yyyy-MM-dd')) ~> DCDatums\nAGGMaanden derive(Periode_key = (Jaar * 10000) + (Maandnummer * 100) + 1) ~> DCPeriodekey\nJoinKostenplaats derive(FTEVast = 1 * (ParttimePerc / 100.00) * (Loonv_perc / 100)) ~> DCMeetwaarden\nLookupMedewerker derive(EinddatumSalaris = iif(isNull(EinddatumSalaris), toDate('99991231','yyyyMMdd'),EinddatumSalaris)) ~> DCNulls\nSTGAFASLoonverdeling filter(1==1) ~> Filter1\nDCMeetwaarden derive(Dienstjaar_key = toString(toInteger(monthsBetween(min_datum, DV_Begindatum) / 12)) + '|' + toString(toInteger(monthsBetween(min_datum,DV_Begindatum)) % 12),\n\t\tLeeftijd_key = toInteger(monthsBetween(min_datum, toTimestamp(toDate(left(Geboortedatum,10),'yyyy-MM-dd'))) / 12),\n\t\tPostcode_key = left(Postcode,4),\n\t\tInstroom = iif((year(toTimestamp(DV_Begindatum))*100) + month(toTimestamp(DV_Begindatum)) == toInteger(Periode_key / 100), PerMedewerker@Medewerker, ''),\n\t\tUitstroom = iif((year(toTimestamp(DV_Einddatum))*100) + month(toTimestamp(DV_Einddatum)) == toInteger(Periode_key / 100), PerMedewerker@Medewerker, ''),\n\t\tmin_datum = min_datum) ~> DCBerekeningKey\nDCDatums, PerMedewerker join(STGAFASLoonverdeling@Medewerker == PerMedewerker@Medewerker,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> LookupMedewerker\nExpandRegels, RefKostenplaats join(Kostenplaats == Kostenplaatscode\n\t&& min_datum >= Begindatum\n\t&& min_datum <= Einddatum,\n\tjoinType:'left',\n\tbroadcast: 'both')~> JoinKostenplaats\nVerzuim, VerzuimSubset join(Medewerker == V_Medewerker\n\t&& BegindatumVerzuimmelding == V_BegindatumVerzuimmelding\n\t&& VerzuimverloopDatum < V_VerzuimverloopDatum,\n\tjoinType:'left',\n\tbroadcast: 'both')~> VerzuimInclEinddatum\nFilterOpBegindatum filter(Nr ==1) ~> VerzuimsetInclEinddatum\nVerzuimVolgenderegel select(mapColumn(\n\t\tV_Medewerker = Medewerker,\n\t\tV_BegindatumVerzuimmelding = BegindatumVerzuimmelding,\n\t\tV_VerzuimverloopDatum = VerzuimverloopDatum\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> VerzuimSubset\nSelect1, DCPeriodekey join(VerzuimverloopBegindatum <= max_datum\n\t&& VerzuimverloopEinddatum >= min_datum,\n\tjoinType:'left',\n\tbroadcast: 'both')~> VerzuimMaandSplit\nDCNull select(mapColumn(\n\t\tMedewerker,\n\t\tNaam,\n\t\tBegindatumVerzuimmelding,\n\t\tVerzuimverloopBegindatum = VerzuimverloopDatum,\n\t\tVerzuimverloopEinddatum = V_VerzuimverloopDatum,\n\t\tEinddatum_verzuim,\n\t\tVerzuimsoortCode,\n\t\tVerzuimsoortOmschrijving,\n\t\tAanwezigheidsPercentage,\n\t\tAanwezigheidsPercentage_AT,\n\t\tDatum_uit_dienst,\n\t\tSoort_Medewerker,\n\t\tReden_verzuim,\n\t\tVangnetregeling,\n\t\tBegindatum_doorlopend_verzuim,\n\t\tDoorlopend_verzuim,\n\t\tNr\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nVerzuimMaandSplit derive(AantalDagen = (dayOfMonth(iif(VerzuimverloopEinddatum > max_datum, max_datum, VerzuimverloopEinddatum)) - dayOfMonth(iif(VerzuimverloopBegindatum < min_datum, min_datum, VerzuimverloopBegindatum))) + 1) ~> DCZiektedagen\nVerzuimsetInclEinddatum derive(V_VerzuimverloopDatum = iif(isNull(V_VerzuimverloopDatum), iif(isNull(Einddatum_verzuim),iif(currentDate() < toDate(BegindatumVerzuimmelding), toDate(BegindatumVerzuimmelding), currentDate()),toDate(Einddatum_verzuim)), toDate(V_VerzuimverloopDatum)),\n\t\tVerzuimverloopDatum = toDate(VerzuimverloopDatum)) ~> DCNull\nVerzuimInclEinddatum window(over(Medewerker,\n\t\tBegindatumVerzuimmelding,\n\t\tVerzuimverloopDatum),\n\tasc(V_VerzuimverloopDatum, false),\n\tNr = rowNumber()) ~> FilterOpBegindatum\nDCZiektedagen derive(DagenZwangerschapsverlof = iif(VerzuimsoortCode == \"ZW\", AantalDagen, 0),\n\t\tDagenZiek = iif(VerzuimsoortCode == \"Z\", AantalDagen, 0),\n\t\tDagenOverig = iif(VerzuimsoortCode != \"Z\", iif(VerzuimsoortCode != \"ZW\", AantalDagen, 0), 0)) ~> DCMeetwaardenFTE\nDCMeetwaardenFTE aggregate(groupBy(Medewerker,\n\t\tPeriode_key,\n\t\tVerzuimsoortCode,\n\t\tAanwezigheidsPercentage,\n\t\tAanwezigheidsPercentage_AT),\n\tAantalDagen = sum(AantalDagen),\n\t\tMaandPerc = sum(AantalDagen) / avg(dagen_in_maand),\n\t\tPercDagenZiek = sum(DagenZiek)  / avg(dagen_in_maand),\n\t\tPercDagenZwangerschapsverlof = sum(DagenZwangerschapsverlof)  / avg(dagen_in_maand),\n\t\tPercDagenOverig = sum(DagenOverig)  / avg(dagen_in_maand)) ~> AGGMeetwaarden\nDCBerekeningKey, AGGMeetwaarden join(PerMedewerker@Medewerker == AGGMeetwaarden@Medewerker\n\t&& DCPeriodekey@Periode_key == AGGMeetwaarden@Periode_key,\n\tjoinType:'left',\n\tbroadcast: 'both')~> JoinVerzuimFTE\nJoinVerzuimFTE derive(FTEZwanger = PercDagenZwangerschapsverlof * FTEVast) ~> DCFTEVerzuimMW\nDCFTEVerzuimMW sink(input(\n\t\tMedewerker_key as string,\n\t\tHerkomst_key as integer,\n\t\tLeeftijd_key as integer,\n\t\tInstroom as string,\n\t\tUitstroom as string,\n\t\tDienstjaar_key as integer,\n\t\tPeriode_key as integer,\n\t\tBegindatum_key as integer,\n\t\tEinddatum_key as integer,\n\t\tKostenplaats_key as string,\n\t\tKostensoort_key as string,\n\t\tHoofdkostenplaats_key as string,\n\t\tCAO_key as string,\n\t\tContracttype_key as string,\n\t\tMedewerkersoort_key as string,\n\t\tFunctie_key as string,\n\t\tDienstverbandbegin as timestamp,\n\t\tDienstverbandeind as timestamp,\n\t\tFTEVast as decimal(18,2),\n\t\tFTERealisatie as decimal(18,2),\n\t\tFTEZwangerschapsverlof as decimal(18,2),\n\t\tFTEOuderschapsverlof as decimal(18,2),\n\t\tFTEGeboorteverlof as decimal(18,2),\n\t\tFTEOnbetaaldverlof as decimal(18,2),\n\t\tFTEMeeruren as decimal(18,2),\n\t\tFTEOproepuren as decimal(18,2),\n\t\tFTEOveruren as decimal(18,2),\n\t\tfeit_formatieid as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tMedewerker_key = Medewerker,\n\t\tPeriode_key,\n\t\tCAO_key = Cao_code_regeling,\n\t\tBegindatum_key,\n\t\tEinddatum_key,\n\t\tContracttype_key = Type_contract_code,\n\t\tMedewerkersoort_key = Soort_medewerker_code,\n\t\tDienstverbandbegin = DV_Begin,\n\t\tDienstverbandeind = DV_Eind,\n\t\tFTEVast,\n\t\tFunctie_key = Functie_code,\n\t\tDienstjaar_key,\n\t\tInstroom,\n\t\tUitstroom,\n\t\tLeeftijd_key,\n\t\tHerkomst_key = Postcode_key,\n\t\tKostenplaats_key,\n\t\tFTEZwangerschapsverlof = FTEZwanger\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Formatie\nAGGMeetwaarden sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_referentie_dim_dienstjaren')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Referentie"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Dienstjaren",
+								"type": "DatasetReference"
+							},
+							"name": "dienstjaren"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Per_dienstjaren",
+								"type": "DatasetReference"
+							},
+							"name": "Refdienstjaren"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DCdienstjarenkey"
+						}
+					],
+					"script": "source(output(\n\t\tjaar as integer '000',\n\t\tmaand as integer '000',\n\t\tgroep1 as string,\n\t\tgroep2 as string,\n\t\tgroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> dienstjaren\ndienstjaren derive(Dienstjaar_key = concat(toString(jaar), '|',toString(maand))) ~> DCdienstjarenkey\nDCdienstjarenkey sink(input(\n\t\tDienstjaar_key as string,\n\t\tJaar as integer,\n\t\tMaand as integer,\n\t\tGroep1 as string,\n\t\tGroep2 as string,\n\t\tGroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tDienstjaar_key,\n\t\tJaar = jaar,\n\t\tMaand = maand,\n\t\tGroep1 = groep1,\n\t\tGroep2 = groep2,\n\t\tGroep3 = groep3\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Refdienstjaren"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_referentie_dim_kostenplaats')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Referentie"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Organisatie",
+								"type": "DatasetReference"
+							},
+							"name": "ExcelOrganisatie"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Ref_Kostenplaats",
+								"type": "DatasetReference"
+							},
+							"name": "RefKostenplaats"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Kostenplaatskey"
+						}
+					],
+					"script": "source(output(\n\t\tkostenplaats as string,\n\t\tN1 as string,\n\t\tN2 as string,\n\t\tregio as string,\n\t\tN3 as string,\n\t\tN4 as string,\n\t\tbegin as date,\n\t\teinde as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ExcelOrganisatie\nExcelOrganisatie derive(Kostenplaats_key = kostenplaats + '|' + toString((year(begin) * 10000) + (month(begin) * 100) + dayOfMonth(begin))) ~> Kostenplaatskey\nKostenplaatskey sink(input(\n\t\tKostenplaats_key as string,\n\t\tKostenplaatscode as string,\n\t\tKostenplaatsomschrijving as string,\n\t\tBegindatum as date,\n\t\tEinddatum as date,\n\t\tNiveau1 as string,\n\t\tNiveau2 as string,\n\t\tRegio as string,\n\t\tNiveau3 as string,\n\t\tNiveau4 as string,\n\t\tLocatie as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tRegio = regio,\n\t\tKostenplaats_key,\n\t\tKostenplaatscode = kostenplaats,\n\t\tKostenplaatsomschrijving = kostenplaats,\n\t\tNiveau1 = N1,\n\t\tNiveau2 = N2,\n\t\tRegio = regio,\n\t\tNiveau3 = N3,\n\t\tNiveau4 = N4,\n\t\tBegindatum = begin,\n\t\tEinddatum = einde\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> RefKostenplaats"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_referentie_dim_kostensoort')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Referentie"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "STG_Exact_Grtbk",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Ref_Kostensoort",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['dim/grtbk']) ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

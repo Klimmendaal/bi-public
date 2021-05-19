@@ -1,0 +1,1227 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "DF-BI-ACC"
+		},
+		"BlobStorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'BlobStorage'"
+		},
+		"LS_Datalake2_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_Datalake2'"
+		},
+		"ls_SQLServer_az_bi_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_SQLServer_az_bi'"
+		},
+		"AzureKeyVault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://KV-DatafactoryBI.vault.azure.net/"
+		},
+		"HttpServer_Afas_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://68619.rest.afas.online/ProfitRestServices/connectors/"
+		},
+		"LS_Datalake2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bipowerstorage2.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BlobStorage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('BlobStorage_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/HttpServer_Afas')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('HttpServer_Afas_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous",
+					"authHeaders": {
+						"Authorization": {
+							"type": "SecureString",
+							"value": "**********"
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_Datalake2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_Datalake2_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_Datalake2_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_SQLServer_az_bi')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_SQLServer_az_bi_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/IR-SQL-Klimmendaal')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLExact')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AFAS_BI_Power_Kostensoort_functie')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "HttpServer_Afas",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/AFAS"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "BI_Power_Kostensoort_functie?take=10000"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"skip": {
+							"type": "integer"
+						},
+						"take": {
+							"type": "integer"
+						},
+						"rows": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"Functie": {
+										"type": "string"
+									},
+									"Org_eenheid": {
+										"type": "string"
+									},
+									"Medewerker": {
+										"type": "string"
+									},
+									"Dienstverband": {
+										"type": "integer"
+									},
+									"Kostenplaats": {
+										"type": "string"
+									},
+									"Kostenplaats_sal": {
+										"type": "string"
+									},
+									"Kostendrager": {
+										"type": "string"
+									},
+									"Jaar": {
+										"type": "integer"
+									},
+									"Periode": {
+										"type": "integer"
+									},
+									"Cao_code": {
+										"type": "string"
+									},
+									"Looncomponent": {
+										"type": "integer"
+									},
+									"Omschrijving_looncomponent": {
+										"type": "string"
+									},
+									"Bedrag": {
+										"type": "number"
+									},
+									"Werkgever_code": {
+										"type": "string"
+									},
+									"Einddatum_contract": {
+										"type": "null"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/HttpServer_Afas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AFAS_BI_Power_Looncomponenten')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "HttpServer_Afas",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/AFAS"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "BI_Power_Looncomponenten?take=10000"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"skip": {
+							"type": "integer"
+						},
+						"take": {
+							"type": "integer"
+						},
+						"rows": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"Functie": {
+										"type": "string"
+									},
+									"Org_eenheid": {
+										"type": "string"
+									},
+									"Medewerker": {
+										"type": "string"
+									},
+									"Dienstverband": {
+										"type": "integer"
+									},
+									"Kostenplaats": {
+										"type": "string"
+									},
+									"Kostenplaats_sal": {
+										"type": "string"
+									},
+									"Kostendrager": {
+										"type": "string"
+									},
+									"Jaar": {
+										"type": "integer"
+									},
+									"Periode": {
+										"type": "integer"
+									},
+									"Cao_code": {
+										"type": "string"
+									},
+									"Looncomponent": {
+										"type": "integer"
+									},
+									"Omschrijving_looncomponent": {
+										"type": "string"
+									},
+									"Bedrag": {
+										"type": "number"
+									},
+									"Werkgever_code": {
+										"type": "string"
+									},
+									"Einddatum_contract": {
+										"type": "null"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/HttpServer_Afas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AFAS_BI_Power_Loonverdeling')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "HttpServer_Afas",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/AFAS"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "BI_Power_Loonverdeling?take=100000"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"skip": {
+							"type": "integer"
+						},
+						"take": {
+							"type": "integer"
+						},
+						"rows": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"Medewerker": {
+										"type": "string"
+									},
+									"DV_nr": {
+										"type": "integer"
+									},
+									"DV_Begin": {
+										"type": "string"
+									},
+									"DV_Eind": {
+										"type": "string"
+									},
+									"Vlgnr_contract": {
+										"type": "integer"
+									},
+									"Contr_Begin": {
+										"type": "string"
+									},
+									"Contr_Eind": {
+										"type": "string"
+									},
+									"Type_contract_code": {
+										"type": "string"
+									},
+									"Type_contract": {
+										"type": "string"
+									},
+									"Soort_medewerker_code": {
+										"type": "string"
+									},
+									"Soort_Medewerker": {
+										"type": "string"
+									},
+									"Dienstbetrekking_code": {
+										"type": "string"
+									},
+									"Dienstbetrekking": {
+										"type": "string"
+									},
+									"Functie_Begin": {
+										"type": "string"
+									},
+									"Functie_Eind": {
+										"type": "string"
+									},
+									"Hoofdkostenplaats": {
+										"type": "string"
+									},
+									"Formatie_Begin": {
+										"type": "string"
+									},
+									"Formatie_Eind": {
+										"type": "string"
+									},
+									"ParttimePerc": {
+										"type": "number"
+									},
+									"Uren_week": {
+										"type": "number"
+									},
+									"Dagen_week": {
+										"type": "number"
+									},
+									"Kostenplaats": {
+										"type": "string"
+									},
+									"OE": {
+										"type": "string"
+									},
+									"Loonv_perc": {
+										"type": "number"
+									},
+									"Functie_code": {
+										"type": "string"
+									},
+									"Functie_omschr": {
+										"type": "string"
+									},
+									"Werkgever_code": {
+										"type": "string"
+									},
+									"Werkgever_naam": {
+										"type": "string"
+									},
+									"Salaris_begin": {
+										"type": "string"
+									},
+									"Salaris_eind": {
+										"type": "string"
+									},
+									"Cao_code_regeling": {
+										"type": "string"
+									},
+									"CAO_omschrijving": {
+										"type": "string"
+									},
+									"Hoofd_Functie_code": {
+										"type": "string"
+									},
+									"Hoofd_Functie_Omschr": {
+										"type": "string"
+									},
+									"Arbeidsvoorwaarde_code": {
+										"type": "string"
+									},
+									"Begindatum_contractketen": {
+										"type": "string"
+									},
+									"Begindatum_organigram": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/HttpServer_Afas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AFAS_BI_Power_Medewerkers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "HttpServer_Afas",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/AFAS"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "BI_Power_Medewerkers?take=10000"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"skip": {
+							"type": "integer"
+						},
+						"take": {
+							"type": "integer"
+						},
+						"rows": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"Medewerker": {
+										"type": "string"
+									},
+									"Roepnaam": {
+										"type": "string"
+									},
+									"Voornaam": {
+										"type": "string"
+									},
+									"Voorletters": {
+										"type": "string"
+									},
+									"Voorvoegsel": {
+										"type": "null"
+									},
+									"Achternaam": {
+										"type": "string"
+									},
+									"Geboortenaam_apart_vastleggen": {
+										"type": "boolean"
+									},
+									"Voorv_geb_naam": {
+										"type": "null"
+									},
+									"Geboortenaam": {
+										"type": "string"
+									},
+									"Voorvoegsel_partner": {
+										"type": "string"
+									},
+									"Geb_naam_partner": {
+										"type": "string"
+									},
+									"Naamgebruik_code": {
+										"type": "string"
+									},
+									"Naamgebruik": {
+										"type": "string"
+									},
+									"Geslacht_code": {
+										"type": "string"
+									},
+									"Geslacht": {
+										"type": "string"
+									},
+									"Nationaliteit_code": {
+										"type": "string"
+									},
+									"Nationaliteit": {
+										"type": "string"
+									},
+									"Geboortedatum": {
+										"type": "string"
+									},
+									"Geboorteland": {
+										"type": "string"
+									},
+									"Geboorteplaats": {
+										"type": "string"
+									},
+									"BSN": {
+										"type": "string"
+									},
+									"Burgerlijke_staat_code": {
+										"type": "string"
+									},
+									"Burgerlijke_staat": {
+										"type": "string"
+									},
+									"Huwelijksdatum": {
+										"type": "string"
+									},
+									"Datum_scheiding": {
+										"type": "null"
+									},
+									"Overlijdensdatum": {
+										"type": "null"
+									},
+									"Telefoonnr_prive": {
+										"type": "null"
+									},
+									"Mobiel_werk": {
+										"type": "null"
+									},
+									"Mobiel_prive": {
+										"type": "null"
+									},
+									"E-mail_prive": {
+										"type": "null"
+									},
+									"Achternaam__init_voorvoegsel__roepnaam_": {
+										"type": "string"
+									},
+									"Straat": {
+										"type": "string"
+									},
+									"Huisnummer": {
+										"type": "integer"
+									},
+									"Toev_aan_huisnr": {
+										"type": "null"
+									},
+									"Postcode": {
+										"type": "string"
+									},
+									"Woonplaats": {
+										"type": "string"
+									},
+									"Land": {
+										"type": "string"
+									},
+									"UPN": {
+										"type": "string"
+									},
+									"E-mail_werk": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/HttpServer_Afas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AFAS_BI_Power_Verzuim')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "HttpServer_Afas",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/AFAS"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "BI_Power_Verzuim?take=100000"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"skip": {
+							"type": "integer"
+						},
+						"take": {
+							"type": "integer"
+						},
+						"rows": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"Medewerker": {
+										"type": "string"
+									},
+									"Naam": {
+										"type": "integer"
+									},
+									"BegindatumVerzuimmelding": {
+										"type": "string"
+									},
+									"VerzuimverloopDatum": {
+										"type": "string"
+									},
+									"Einddatum_verzuim": {
+										"type": "string"
+									},
+									"VerzuimsoortCode": {
+										"type": "string"
+									},
+									"VerzuimsoortOmschrijving": {
+										"type": "string"
+									},
+									"AanwezigheidsPercentage": {
+										"type": "number"
+									},
+									"AanwezigheidsPercentage_AT": {
+										"type": "number"
+									},
+									"Datum_uit_dienst": {
+										"type": "null"
+									},
+									"Soort_Medewerker": {
+										"type": "string"
+									},
+									"Reden_verzuim": {
+										"type": "null"
+									},
+									"Vangnetregeling": {
+										"type": "boolean"
+									},
+									"Begindatum_doorlopend_verzuim": {
+										"type": "string"
+									},
+									"Doorlopend_verzuim": {
+										"type": "boolean"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/HttpServer_Afas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "ref",
+					"table": "temp2"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_az_bi')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dienstjaren')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Referentie"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Dienstjaren",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "referentie.xlsx",
+						"folderPath": "tabel referentie",
+						"fileSystem": "referentie"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "jaar",
+						"type": "String"
+					},
+					{
+						"name": "maand",
+						"type": "String"
+					},
+					{
+						"name": "groep1",
+						"type": "String"
+					},
+					{
+						"name": "groep2",
+						"type": "String"
+					},
+					{
+						"name": "groep3",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_Datalake2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Feit_Begroting')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Personeel"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Kostenplaats_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Kostensoort_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Periode_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FTEBegroot",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "feit_begrotingid",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "per",
+					"table": "feit_begroting"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_az_bi')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Feit_Formatie')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Personeel"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Medewerker_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Herkomst_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Leeftijd_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Instroom",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Uitstroom",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Dienstjaar_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Periode_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Begindatum_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Einddatum_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Kostenplaats_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Kostensoort_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Hoofdkostenplaats_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CAO_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Contracttype_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Medewerkersoort_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Functie_key",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Dienstverbandbegin",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Dienstverbandeind",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FTEVast",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "FTERealisatie",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "FTEZwangerschapsverlof",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "FTEOuderschapsverlof",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "FTEGeboorteverlof",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "FTEOnbetaaldverlof",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "FTEMeeruren",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "FTEOproepuren",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "FTEOveruren",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "feit_formatieid",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "per",
+					"table": "feit_formatie"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_az_bi')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Kostensoort_rapportage')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Referentie"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Kostensoorten rapportage",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "referentie.xlsx",
+						"folderPath": "tabel referentie",
+						"fileSystem": "referentie"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Kostensoortcode min",
+						"type": "String"
+					},
+					{
+						"name": "Kostensoortcode max",
+						"type": "String"
+					},
+					{
+						"name": "Sort1",
+						"type": "String"
+					},
+					{
+						"name": "Verdichting1",
+						"type": "String"
+					},
+					{
+						"name": "Sort2",
+						"type": "String"
+					},
+					{
+						"name": "Verdichting2",
+						"type": "String"
+					},
+					{
+						"name": "Sort3",
+						"type": "String"
+					},
+					{
+						"name": "Verdichting3",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_Datalake2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Leeftijdsgroep')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Referentie"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Leeftijdsgroep",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "referentie.xlsx",
+						"folderPath": "tabel referentie",
+						"fileSystem": "referentie"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Leeftijd",
+						"type": "String"
+					},
+					{
+						"name": "LeeftijdsgroepVernet",
+						"type": "String"
+					},
+					{
+						"name": "LeeftijdsgroepPatient",
+						"type": "String"
+					},
+					{
+						"name": "Groep1",
+						"type": "String"
+					},
+					{
+						"name": "Groep2",
+						"type": "String"
+					},
+					{
+						"name": "Groep3",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_Datalake2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Organisatie')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Datalake2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "1_Bronnen/Referentie"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Organisatie",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "referentie.xlsx",
+						"folderPath": "tabel referentie",
+						"fileSystem": "referentie"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "kostenplaats",
+						"type": "String"
+					},
+					{
+						"name": "N1",
+						"type": "String"
+					},
+					{
+						"name": "N2",
+						"type": "String"
+					},
+					{
+						"name": "regio",
+						"type": "String"
+					},
+					{
+						"name": "N3",
+						"type": "String"
+					},
+					{
+						"name": "N4",
+						"type": "String"
+					},
+					{
+						"name": "begin",
+						"type": "String"
+					},
+					{
+						"name": "einde",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_Datalake2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Per_CAO')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_SQLServer_az_bi",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "3_Datamarts/Personeel"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CAO_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CAOcode",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CAOomschrijving",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "per",
+					"table": "dim_CAO"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_SQLServer_az_bi')]"
+			]
+		}
+	]
+}

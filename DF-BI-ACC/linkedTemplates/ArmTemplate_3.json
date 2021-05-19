@@ -1,0 +1,3203 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "DF-BI-ACC"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_referentie_dim_leeftijdsgroep')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Referentie"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Leeftijdsgroep",
+								"type": "DatasetReference"
+							},
+							"name": "Leeftijdsgroep"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Per_leeftijdsgroep",
+								"type": "DatasetReference"
+							},
+							"name": "dimleeftijdsgroep"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\tLeeftijd as integer '000',\n\t\tLeeftijdsgroepVernet as string,\n\t\tLeeftijdsgroepPatient as string,\n\t\tGroep1 as string,\n\t\tGroep2 as string,\n\t\tGroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Leeftijdsgroep\nLeeftijdsgroep sink(input(\n\t\tLeeftijdsgroep_key as integer,\n\t\tLeeftijd as integer,\n\t\tLeeftijdsgroepVernet as string,\n\t\tLeeftijdsgroepPatient as string,\n\t\tGroep1 as string,\n\t\tGroep2 as string,\n\t\tGroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tLeeftijdsgroep_key = Leeftijd,\n\t\tLeeftijd,\n\t\tLeeftijdsgroepVernet,\n\t\tLeeftijdsgroepPatient,\n\t\tGroep1,\n\t\tGroep2,\n\t\tGroep3\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> dimleeftijdsgroep"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_vul_referentie_dim_postcode')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Referentie"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Postcode",
+								"type": "DatasetReference"
+							},
+							"name": "excelpostcode"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Ref_Postcode",
+								"type": "DatasetReference"
+							},
+							"name": "RefPostcode"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\tPostcodeNummers as string,\n\t\tPlaats as string,\n\t\tGemeente as string,\n\t\tProvincie as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> excelpostcode\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nexcelpostcode sink(input(\n\t\tPostcode_key as integer,\n\t\tPostcode4 as integer,\n\t\tWoonplaats as string,\n\t\tRegio as string,\n\t\tGemeente as string,\n\t\tProvincie as string,\n\t\tVerzorgingsgebied as string,\n\t\tGroep1 as string,\n\t\tGroep2 as string,\n\t\tGroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tPostcode_key = PostcodeNummers,\n\t\tPostcode4 = PostcodeNummers,\n\t\tWoonplaats = Plaats,\n\t\tGemeente,\n\t\tProvincie\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> RefPostcode"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Personeel')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Vult het personeelsmodel",
+				"activities": [
+					{
+						"name": "STG_AFAS_Medewerkers",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "BI_Power_Medewerkers"
+							},
+							{
+								"name": "Destination",
+								"value": "personeel/dim/medewerker"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['Medewerker']"
+										},
+										"sink": {
+											"name": "Medewerker"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Roepnaam']"
+										},
+										"sink": {
+											"name": "Roepnaam"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Voornaam']"
+										},
+										"sink": {
+											"name": "Voornaam"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Voorletters']"
+										},
+										"sink": {
+											"name": "Voorletters"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Voorvoegsel']"
+										},
+										"sink": {
+											"name": "Voorvoegsel",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Achternaam']"
+										},
+										"sink": {
+											"name": "Achternaam"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Geboortenaam_apart_vastleggen']"
+										},
+										"sink": {
+											"name": "Geboortenaam_apart_vastleggen"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Voorv_geb_naam']"
+										},
+										"sink": {
+											"name": "Voorv_geb_naam",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Geboortenaam']"
+										},
+										"sink": {
+											"name": "Geboortenaam"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Voorvoegsel_partner']"
+										},
+										"sink": {
+											"name": "Voorvoegsel_partner"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Geb_naam_partner']"
+										},
+										"sink": {
+											"name": "Geb_naam_partner"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Naamgebruik_code']"
+										},
+										"sink": {
+											"name": "Naamgebruik_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Naamgebruik']"
+										},
+										"sink": {
+											"name": "Naamgebruik"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Geslacht_code']"
+										},
+										"sink": {
+											"name": "Geslacht_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Geslacht']"
+										},
+										"sink": {
+											"name": "Geslacht"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Nationaliteit_code']"
+										},
+										"sink": {
+											"name": "Nationaliteit_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Nationaliteit']"
+										},
+										"sink": {
+											"name": "Nationaliteit"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Geboortedatum']"
+										},
+										"sink": {
+											"name": "Geboortedatum"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Geboorteland']"
+										},
+										"sink": {
+											"name": "Geboorteland"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Geboorteplaats']"
+										},
+										"sink": {
+											"name": "Geboorteplaats"
+										}
+									},
+									{
+										"source": {
+											"path": "[['BSN']"
+										},
+										"sink": {
+											"name": "BSN"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Burgerlijke_staat_code']"
+										},
+										"sink": {
+											"name": "Burgerlijke_staat_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Burgerlijke_staat']"
+										},
+										"sink": {
+											"name": "Burgerlijke_staat"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Huwelijksdatum']"
+										},
+										"sink": {
+											"name": "Huwelijksdatum"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Datum_scheiding']"
+										},
+										"sink": {
+											"name": "Datum_scheiding",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Overlijdensdatum']"
+										},
+										"sink": {
+											"name": "Overlijdensdatum",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Telefoonnr_prive']"
+										},
+										"sink": {
+											"name": "Telefoonnr_prive",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Mobiel_werk']"
+										},
+										"sink": {
+											"name": "Mobiel_werk",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Mobiel_prive']"
+										},
+										"sink": {
+											"name": "Mobiel_prive",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['E-mail_prive']"
+										},
+										"sink": {
+											"name": "E-mail_prive",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Achternaam__init_voorvoegsel__roepnaam_']"
+										},
+										"sink": {
+											"name": "Achternaam__init_voorvoegsel__roepnaam_"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Straat']"
+										},
+										"sink": {
+											"name": "Straat"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Huisnummer']"
+										},
+										"sink": {
+											"name": "Huisnummer"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Toev_aan_huisnr']"
+										},
+										"sink": {
+											"name": "Toev_aan_huisnr",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Postcode']"
+										},
+										"sink": {
+											"name": "Postcode"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Woonplaats']"
+										},
+										"sink": {
+											"name": "Woonplaats"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Land']"
+										},
+										"sink": {
+											"name": "Land"
+										}
+									},
+									{
+										"source": {
+											"path": "[['UPN']"
+										},
+										"sink": {
+											"name": "UPN"
+										}
+									},
+									{
+										"source": {
+											"path": "[['E-mail_werk']"
+										},
+										"sink": {
+											"name": "E-mail_werk"
+										}
+									},
+									{
+										"source": {
+											"path": "$['skip']"
+										},
+										"sink": {
+											"name": "skip"
+										}
+									},
+									{
+										"source": {
+											"path": "$['take']"
+										},
+										"sink": {
+											"name": "take"
+										}
+									}
+								],
+								"collectionReference": "$['rows']"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AFAS_BI_Power_Medewerkers",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "STG_AFAS_Medewerker",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "df_vul_dim_medewerker",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "STG_AFAS_Medewerkers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_personeel_dim_medewerker",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "STG_AFAS_Loonverdeling",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['skip']"
+										},
+										"sink": {
+											"name": "skip"
+										}
+									},
+									{
+										"source": {
+											"path": "$['take']"
+										},
+										"sink": {
+											"name": "take"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Medewerker']"
+										},
+										"sink": {
+											"name": "Medewerker"
+										}
+									},
+									{
+										"source": {
+											"path": "[['DV_nr']"
+										},
+										"sink": {
+											"name": "DV_nr"
+										}
+									},
+									{
+										"source": {
+											"path": "[['DV_Begin']"
+										},
+										"sink": {
+											"name": "DV_Begin"
+										}
+									},
+									{
+										"source": {
+											"path": "[['DV_Eind']"
+										},
+										"sink": {
+											"name": "DV_Eind"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Vlgnr_contract']"
+										},
+										"sink": {
+											"name": "Vlgnr_contract"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Contr_Begin']"
+										},
+										"sink": {
+											"name": "Contr_Begin"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Contr_Eind']"
+										},
+										"sink": {
+											"name": "Contr_Eind"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Type_contract_code']"
+										},
+										"sink": {
+											"name": "Type_contract_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Type_contract']"
+										},
+										"sink": {
+											"name": "Type_contract"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Soort_medewerker_code']"
+										},
+										"sink": {
+											"name": "Soort_medewerker_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Soort_Medewerker']"
+										},
+										"sink": {
+											"name": "Soort_Medewerker"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Dienstbetrekking_code']"
+										},
+										"sink": {
+											"name": "Dienstbetrekking_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Dienstbetrekking']"
+										},
+										"sink": {
+											"name": "Dienstbetrekking"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Functie_Begin']"
+										},
+										"sink": {
+											"name": "Functie_Begin"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Functie_Eind']"
+										},
+										"sink": {
+											"name": "Functie_Eind"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Hoofdkostenplaats']"
+										},
+										"sink": {
+											"name": "Hoofdkostenplaats"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Formatie_Begin']"
+										},
+										"sink": {
+											"name": "Formatie_Begin"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Formatie_Eind']"
+										},
+										"sink": {
+											"name": "Formatie_Eind"
+										}
+									},
+									{
+										"source": {
+											"path": "[['ParttimePerc']"
+										},
+										"sink": {
+											"name": "ParttimePerc"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Uren_week']"
+										},
+										"sink": {
+											"name": "Uren_week"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Dagen_week']"
+										},
+										"sink": {
+											"name": "Dagen_week"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Kostenplaats']"
+										},
+										"sink": {
+											"name": "Kostenplaats"
+										}
+									},
+									{
+										"source": {
+											"path": "[['OE']"
+										},
+										"sink": {
+											"name": "OE"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Loonv_perc']"
+										},
+										"sink": {
+											"name": "Loonv_perc"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Functie_code']"
+										},
+										"sink": {
+											"name": "Functie_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Functie_omschr']"
+										},
+										"sink": {
+											"name": "Functie_omschr"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Werkgever_code']"
+										},
+										"sink": {
+											"name": "Werkgever_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Werkgever_naam']"
+										},
+										"sink": {
+											"name": "Werkgever_naam"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Salaris_begin']"
+										},
+										"sink": {
+											"name": "Salaris_begin"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Salaris_eind']"
+										},
+										"sink": {
+											"name": "Salaris_eind"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Cao_code_regeling']"
+										},
+										"sink": {
+											"name": "Cao_code_regeling"
+										}
+									},
+									{
+										"source": {
+											"path": "[['CAO_omschrijving']"
+										},
+										"sink": {
+											"name": "CAO_omschrijving"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Hoofd_Functie_code']"
+										},
+										"sink": {
+											"name": "Hoofd_Functie_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Hoofd_Functie_Omschr']"
+										},
+										"sink": {
+											"name": "Hoofd_Functie_Omschr"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Arbeidsvoorwaarde_code']"
+										},
+										"sink": {
+											"name": "Arbeidsvoorwaarde_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Begindatum_contractketen']"
+										},
+										"sink": {
+											"name": "Begindatum_contractketen"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Begindatum_organigram']"
+										},
+										"sink": {
+											"name": "Begindatum_organigram"
+										}
+									}
+								],
+								"collectionReference": "$['rows']",
+								"mapComplexValuesToString": false
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AFAS_BI_Power_Loonverdeling",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "STG_AFAS_Loonverdeling",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "df_vul_feit_formatie",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_vul_dim_kostenplaats",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "df_vul_personeel_dim_contract",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "df_vul_dim_medewerker",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "df_vul_personeel_dim_cao",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "df_vul_personeel_dim_medewerkersoort",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_personeel_feit_formatie",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STGAFASLoonverdeling": {},
+									"RefDatum": {},
+									"PerMedewerker": {},
+									"RefKostenplaats": {},
+									"Verzuim": {},
+									"VerzuimVolgenderegel": {},
+									"Looncomponenten": {},
+									"Formatie": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_vul_feit_begroting",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_vul_dim_kostenplaats",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_personeel_feit_begroting",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Formatiebegroting": {},
+									"maanden": {},
+									"RefKostenplaats": {},
+									"DMFeitBegroting": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_vul_dim_kostenplaats",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_referentie_dim_kostenplaats",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ExcelOrganisatie": {},
+									"RefKostenplaats": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_vul_personeel_dim_cao",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "STG_AFAS_Loonverdeling",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_personeel_dim_cao",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"CAO": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_vul_personeel_dim_contract",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "STG_AFAS_Loonverdeling",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_personeel_dim_contract",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_vul_personeel_dim_medewerkersoort",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "STG_AFAS_Loonverdeling",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_personeel_dim_medewerkersoort",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"loonverdeling": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "STG_AFAS_Kostensoort_functie",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['skip']"
+										},
+										"sink": {
+											"name": "skip"
+										}
+									},
+									{
+										"source": {
+											"path": "$['take']"
+										},
+										"sink": {
+											"name": "take"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Specifieke_bron_code']"
+										},
+										"sink": {
+											"name": "Specifieke_bron_code"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Specifieke_bron_omschrijving']"
+										},
+										"sink": {
+											"name": "Specifieke_bron_omschrijving"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Vaste_waarde']"
+										},
+										"sink": {
+											"name": "Vaste_waarde"
+										}
+									}
+								],
+								"collectionReference": "$['rows']"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AFAS_BI_Power_Kostensoort_functie",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "STG_AFAS_Kostensoort_functie",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "df_vul_dim_functie",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "STG_AFAS_Kostensoort_functie",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_personeel_dim_functie",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"AfasKostensoort": {},
+									"DimFunctie": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "STG_AFAS_Verzuim",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['Medewerker']"
+										},
+										"sink": {
+											"name": "Medewerker"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Naam']"
+										},
+										"sink": {
+											"name": "Naam"
+										}
+									},
+									{
+										"source": {
+											"path": "[['BegindatumVerzuimmelding']"
+										},
+										"sink": {
+											"name": "BegindatumVerzuimmelding",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "[['VerzuimverloopDatum']"
+										},
+										"sink": {
+											"name": "VerzuimverloopDatum",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Einddatum_verzuim']"
+										},
+										"sink": {
+											"name": "Einddatum_verzuim",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "[['VerzuimsoortCode']"
+										},
+										"sink": {
+											"name": "VerzuimsoortCode"
+										}
+									},
+									{
+										"source": {
+											"path": "[['VerzuimsoortOmschrijving']"
+										},
+										"sink": {
+											"name": "VerzuimsoortOmschrijving"
+										}
+									},
+									{
+										"source": {
+											"path": "[['AanwezigheidsPercentage']"
+										},
+										"sink": {
+											"name": "AanwezigheidsPercentage"
+										}
+									},
+									{
+										"source": {
+											"path": "[['AanwezigheidsPercentage_AT']"
+										},
+										"sink": {
+											"name": "AanwezigheidsPercentage_AT"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Datum_uit_dienst']"
+										},
+										"sink": {
+											"name": "Datum_uit_dienst",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Soort_Medewerker']"
+										},
+										"sink": {
+											"name": "Soort_Medewerker"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Reden_verzuim']"
+										},
+										"sink": {
+											"name": "Reden_verzuim",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Vangnetregeling']"
+										},
+										"sink": {
+											"name": "Vangnetregeling"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Begindatum_doorlopend_verzuim']"
+										},
+										"sink": {
+											"name": "Begindatum_doorlopend_verzuim",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Doorlopend_verzuim']"
+										},
+										"sink": {
+											"name": "Doorlopend_verzuim"
+										}
+									}
+								],
+								"collectionReference": "$['rows']",
+								"mapComplexValuesToString": false
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AFAS_BI_Power_Verzuim",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "STG_AFAS_Verzuim",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "STG_AFAS_Looncomponenten",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['skip']"
+										},
+										"sink": {
+											"name": "skip"
+										}
+									},
+									{
+										"source": {
+											"path": "$['take']"
+										},
+										"sink": {
+											"name": "take"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Functie']"
+										},
+										"sink": {
+											"name": "Functie"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Org_eenheid']"
+										},
+										"sink": {
+											"name": "Org_eenheid"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Medewerker']"
+										},
+										"sink": {
+											"name": "Medewerker"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Dienstverband']"
+										},
+										"sink": {
+											"name": "Dienstverband"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Kostenplaats']"
+										},
+										"sink": {
+											"name": "Kostenplaats"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Kostenplaats_sal']"
+										},
+										"sink": {
+											"name": "Kostenplaats_sal"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Kostendrager']"
+										},
+										"sink": {
+											"name": "Kostendrager"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Jaar']"
+										},
+										"sink": {
+											"name": "Jaar"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Periode']"
+										},
+										"sink": {
+											"name": "Periode"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Cao_code']"
+										},
+										"sink": {
+											"name": "Cao_code"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Looncomponent']"
+										},
+										"sink": {
+											"name": "Looncomponent"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Omschrijving_looncomponent']"
+										},
+										"sink": {
+											"name": "Omschrijving_looncomponent"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Bedrag']"
+										},
+										"sink": {
+											"name": "Bedrag"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Werkgever_code']"
+										},
+										"sink": {
+											"name": "Werkgever_code"
+										}
+									},
+									{
+										"source": {
+											"path": "$['rows'][0]['Einddatum_contract']"
+										},
+										"sink": {
+											"name": "Einddatum_contract",
+											"type": "DateTime"
+										}
+									}
+								],
+								"collectionReference": "",
+								"mapComplexValuesToString": false
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AFAS_BI_Power_Looncomponenten",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "STG_AFAS_Looncomponenten",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "STG_Exact_Grtbk",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ID",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "reknr",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "reknr",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "oms25_0",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "oms25_0",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "oms25_1",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "oms25_1",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "oms25_2",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "oms25_2",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "oms25_3",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "oms25_3",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "oms25_4",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "oms25_4",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "bal_vw",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "bal_vw",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "debcrd",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "debcrd",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "subtotrek",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "subtotrek",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "gbktext",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "gbktext",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "btw_code",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "btw_code",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "projectrek",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "projectrek",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "kstplrek",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "kstplrek",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "kstdrrek",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "kstdrrek",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "aantallen",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "aantallen",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "omzrek",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "omzrek",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "type_rek",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "type_rek",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "mineraal",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "mineraal",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "blokkeer",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "blokkeer",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "herwaard",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "herwaard",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "verdicht",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "verdicht",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "blznr",
+											"type": "Int16",
+											"physicalType": "smallint"
+										},
+										"sink": {
+											"name": "blznr",
+											"type": "Int16",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "perc_naf",
+											"type": "Double",
+											"physicalType": "float"
+										},
+										"sink": {
+											"name": "perc_naf",
+											"type": "Double",
+											"physicalType": "DOUBLE"
+										}
+									},
+									{
+										"source": {
+											"name": "reknr_naf",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "reknr_naf",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "perc_prive",
+											"type": "Double",
+											"physicalType": "float"
+										},
+										"sink": {
+											"name": "perc_prive",
+											"type": "Double",
+											"physicalType": "DOUBLE"
+										}
+									},
+									{
+										"source": {
+											"name": "reknr_priv",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "reknr_priv",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "bkjrcode",
+											"type": "Int16",
+											"physicalType": "smallint"
+										},
+										"sink": {
+											"name": "bkjrcode",
+											"type": "Int16",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "bkjr_mut",
+											"type": "Int16",
+											"physicalType": "smallint"
+										},
+										"sink": {
+											"name": "bkjr_mut",
+											"type": "Int16",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "afletteren",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "afletteren",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "aflet_mut",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "aflet_mut",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "act_rek",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "act_rek",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "type_com",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "type_com",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "std_kstpl",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "std_kstpl",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "std_kstdr",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "std_kstdr",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "aandacht",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "aandacht",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "wisselrek",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "wisselrek",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "type_rek2",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "type_rek2",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "wijz_reg",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "wijz_reg",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "reknr_l",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "reknr_l",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "prnbifunc",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "prnbifunc",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "afsreknr",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "afsreknr",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "scheme_type",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "scheme_type",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "analyt_acc",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "analyt_acc",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "reknr_2",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "reknr_2",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield1",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield1",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield2",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield2",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield3",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield3",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield4",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield4",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield5",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield5",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield6",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield6",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield7",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield7",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield8",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield8",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield9",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield9",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield10",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "freefield10",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield11",
+											"type": "Double",
+											"physicalType": "float"
+										},
+										"sink": {
+											"name": "freefield11",
+											"type": "Double",
+											"physicalType": "DOUBLE"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield12",
+											"type": "Double",
+											"physicalType": "float"
+										},
+										"sink": {
+											"name": "freefield12",
+											"type": "Double",
+											"physicalType": "DOUBLE"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield13",
+											"type": "Double",
+											"physicalType": "float"
+										},
+										"sink": {
+											"name": "freefield13",
+											"type": "Double",
+											"physicalType": "DOUBLE"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield14",
+											"type": "Double",
+											"physicalType": "float"
+										},
+										"sink": {
+											"name": "freefield14",
+											"type": "Double",
+											"physicalType": "DOUBLE"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield15",
+											"type": "Double",
+											"physicalType": "float"
+										},
+										"sink": {
+											"name": "freefield15",
+											"type": "Double",
+											"physicalType": "DOUBLE"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield16",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "freefield16",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield17",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "freefield17",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield18",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "freefield18",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield19",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "freefield19",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "freefield20",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "freefield20",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "statusdate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "statusdate",
+											"type": "DateTime",
+											"physicalType": "INT_96"
+										}
+									},
+									{
+										"source": {
+											"name": "centr_account",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "centr_account",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "IntBalanceDebit",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "IntBalanceDebit",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "subclass_pass",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "subclass_pass",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "OffBalSubClassCredit",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "OffBalSubClassCredit",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "IsPersonalAccount",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "IsPersonalAccount",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "TypeAdjustmentInflation",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "TypeAdjustmentInflation",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "DocumentID",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "DocumentID",
+											"type": "Guid",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "alternativeledger",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "alternativeledger",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "UseResource",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "UseResource",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "UseProject",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "UseProject",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "UseItem",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "UseItem",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "UseDebtor",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "UseDebtor",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "UseCreditor",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "UseCreditor",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "UseIntercompany",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "UseIntercompany",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "CompanyCode",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "CompanyCode",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "AccountCode",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "AccountCode",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "AccountReportCategory",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "AccountReportCategory",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "AccountConversionType",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "AccountConversionType",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_01",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_01",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_02",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_02",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_03",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_03",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_04",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_04",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_05",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_05",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_06",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_06",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_07",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_07",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_08",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_08",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_09",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_09",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_10",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_10",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_11",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_11",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Class_12",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Class_12",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "UseIBActive",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "UseIBActive",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "UseCostcenterAllocation",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "UseCostcenterAllocation",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "AssociateGL",
+											"type": "String",
+											"physicalType": "char"
+										},
+										"sink": {
+											"name": "AssociateGL",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "ShowNotes",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "ShowNotes",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "ExcludeVATListing",
+											"type": "Byte",
+											"physicalType": "tinyint"
+										},
+										"sink": {
+											"name": "ExcludeVATListing",
+											"type": "Byte",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "Division",
+											"type": "Int16",
+											"physicalType": "smallint"
+										},
+										"sink": {
+											"name": "Division",
+											"type": "Int16",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "syscreated",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "syscreated",
+											"type": "DateTime",
+											"physicalType": "INT_96"
+										}
+									},
+									{
+										"source": {
+											"name": "syscreator",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "syscreator",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "sysmodified",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "sysmodified",
+											"type": "DateTime",
+											"physicalType": "INT_96"
+										}
+									},
+									{
+										"source": {
+											"name": "sysmodifier",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "sysmodifier",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "sysguid",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "sysguid",
+											"type": "Guid",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "timestamp",
+											"physicalType": "timestamp"
+										},
+										"sink": {
+											"name": "timestamp"
+										}
+									},
+									{
+										"source": {
+											"name": "MSICCode",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "MSICCode",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "TaxonomyCode",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "TaxonomyCode",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "TariffCode",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "TariffCode",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Exact_grtbk",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "STG_Exact_Grtbk",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-05-17T12:38:32Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Referentie')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "vul_postcode",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_referentie_dim_postcode",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"excelpostcode": {},
+									"source1": {},
+									"RefPostcode": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "vul_Diensjaren",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_referentie_dim_dienstjaren",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"dienstjaren": {},
+									"Refdienstjaren": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "vul_Leeftijdsgroep",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_referentie_dim_leeftijdsgroep",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Leeftijdsgroep": {},
+									"dimleeftijdsgroep": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-05-17T06:41:50Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_vul_referentie_dim_postcode')]",
+				"[concat(variables('factoryId'), '/dataflows/df_vul_referentie_dim_leeftijdsgroep')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tbv testruns')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_vul_personeel_feit_formatie",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STGAFASLoonverdeling": {},
+									"RefDatum": {},
+									"PerMedewerker": {},
+									"RefKostenplaats": {},
+									"Verzuim": {},
+									"VerzuimVolgenderegel": {},
+									"Looncomponenten": {},
+									"Formatie": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 48,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-05-17T14:43:35Z"
+			},
+			"dependsOn": []
+		}
+	]
+}

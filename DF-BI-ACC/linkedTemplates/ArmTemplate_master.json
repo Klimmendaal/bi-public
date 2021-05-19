@@ -1,0 +1,186 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "DF-BI-ACC"
+		},
+		"BlobStorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'BlobStorage'"
+		},
+		"LS_Datalake2_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_Datalake2'"
+		},
+		"ls_SQLServer_Exact_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_SQLServer_Exact'"
+		},
+		"ls_SQLServer_Exact_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_SQLServer_Exact'"
+		},
+		"ls_SQLServer_Hix_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_SQLServer_Hix'"
+		},
+		"ls_SQLServer_Hix_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_SQLServer_Hix'"
+		},
+		"ls_SQLServer_az_bi_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_SQLServer_az_bi'"
+		},
+		"AzureKeyVault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://KV-DatafactoryBI.vault.azure.net/"
+		},
+		"HttpServer_Afas_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://68619.rest.afas.online/ProfitRestServices/connectors/"
+		},
+		"LS_Datalake2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bipowerstorage2.dfs.core.windows.net"
+		},
+		"ls_SQLServer_Exact_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "gkld\\svc-azure-ls-exact"
+		},
+		"ls_SQLServer_Hix_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "gkld\\svc-azure-ls-hix"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "DF-BI-ACC_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"BlobStorage_connectionString": {
+						"value": "[parameters('BlobStorage_connectionString')]"
+					},
+					"LS_Datalake2_accountKey": {
+						"value": "[parameters('LS_Datalake2_accountKey')]"
+					},
+					"ls_SQLServer_az_bi_connectionString": {
+						"value": "[parameters('ls_SQLServer_az_bi_connectionString')]"
+					},
+					"AzureKeyVault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault_properties_typeProperties_baseUrl')]"
+					},
+					"HttpServer_Afas_properties_typeProperties_url": {
+						"value": "[parameters('HttpServer_Afas_properties_typeProperties_url')]"
+					},
+					"LS_Datalake2_properties_typeProperties_url": {
+						"value": "[parameters('LS_Datalake2_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "DF-BI-ACC_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'DF-BI-ACC_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "DF-BI-ACC_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"ls_SQLServer_Exact_connectionString": {
+						"value": "[parameters('ls_SQLServer_Exact_connectionString')]"
+					},
+					"ls_SQLServer_Exact_password": {
+						"value": "[parameters('ls_SQLServer_Exact_password')]"
+					},
+					"ls_SQLServer_Hix_connectionString": {
+						"value": "[parameters('ls_SQLServer_Hix_connectionString')]"
+					},
+					"ls_SQLServer_Hix_password": {
+						"value": "[parameters('ls_SQLServer_Hix_password')]"
+					},
+					"ls_SQLServer_Exact_properties_typeProperties_userName": {
+						"value": "[parameters('ls_SQLServer_Exact_properties_typeProperties_userName')]"
+					},
+					"ls_SQLServer_Hix_properties_typeProperties_userName": {
+						"value": "[parameters('ls_SQLServer_Hix_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'DF-BI-ACC_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "DF-BI-ACC_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'DF-BI-ACC_ArmTemplate_2')]"
+			]
+		}
+	]
+}
