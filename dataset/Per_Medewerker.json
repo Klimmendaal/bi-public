@@ -1,0 +1,41 @@
+{
+	"name": "Per_Medewerker",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_az_bi",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "3_Datamarts/Personeel"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Medewerker_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Medewerkernaam",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Geslacht",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Geboortedatum",
+				"type": "date"
+			},
+			{
+				"name": "Personeelsnummer",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "per",
+			"table": "dim_medewerker"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

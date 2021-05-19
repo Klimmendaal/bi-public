@@ -1,0 +1,157 @@
+{
+	"name": "AFAS_BI_Power_Medewerkers",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HttpServer_Afas",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/AFAS"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "BI_Power_Medewerkers?take=10000"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"skip": {
+					"type": "integer"
+				},
+				"take": {
+					"type": "integer"
+				},
+				"rows": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"Medewerker": {
+								"type": "string"
+							},
+							"Roepnaam": {
+								"type": "string"
+							},
+							"Voornaam": {
+								"type": "string"
+							},
+							"Voorletters": {
+								"type": "string"
+							},
+							"Voorvoegsel": {
+								"type": "null"
+							},
+							"Achternaam": {
+								"type": "string"
+							},
+							"Geboortenaam_apart_vastleggen": {
+								"type": "boolean"
+							},
+							"Voorv_geb_naam": {
+								"type": "null"
+							},
+							"Geboortenaam": {
+								"type": "string"
+							},
+							"Voorvoegsel_partner": {
+								"type": "string"
+							},
+							"Geb_naam_partner": {
+								"type": "string"
+							},
+							"Naamgebruik_code": {
+								"type": "string"
+							},
+							"Naamgebruik": {
+								"type": "string"
+							},
+							"Geslacht_code": {
+								"type": "string"
+							},
+							"Geslacht": {
+								"type": "string"
+							},
+							"Nationaliteit_code": {
+								"type": "string"
+							},
+							"Nationaliteit": {
+								"type": "string"
+							},
+							"Geboortedatum": {
+								"type": "string"
+							},
+							"Geboorteland": {
+								"type": "string"
+							},
+							"Geboorteplaats": {
+								"type": "string"
+							},
+							"BSN": {
+								"type": "string"
+							},
+							"Burgerlijke_staat_code": {
+								"type": "string"
+							},
+							"Burgerlijke_staat": {
+								"type": "string"
+							},
+							"Huwelijksdatum": {
+								"type": "string"
+							},
+							"Datum_scheiding": {
+								"type": "null"
+							},
+							"Overlijdensdatum": {
+								"type": "null"
+							},
+							"Telefoonnr_prive": {
+								"type": "null"
+							},
+							"Mobiel_werk": {
+								"type": "null"
+							},
+							"Mobiel_prive": {
+								"type": "null"
+							},
+							"E-mail_prive": {
+								"type": "null"
+							},
+							"Achternaam__init_voorvoegsel__roepnaam_": {
+								"type": "string"
+							},
+							"Straat": {
+								"type": "string"
+							},
+							"Huisnummer": {
+								"type": "integer"
+							},
+							"Toev_aan_huisnr": {
+								"type": "null"
+							},
+							"Postcode": {
+								"type": "string"
+							},
+							"Woonplaats": {
+								"type": "string"
+							},
+							"Land": {
+								"type": "string"
+							},
+							"UPN": {
+								"type": "string"
+							},
+							"E-mail_werk": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

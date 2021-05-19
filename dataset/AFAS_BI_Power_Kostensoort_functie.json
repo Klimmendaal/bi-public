@@ -1,0 +1,85 @@
+{
+	"name": "AFAS_BI_Power_Kostensoort_functie",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HttpServer_Afas",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/AFAS"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "BI_Power_Kostensoort_functie?take=10000"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"skip": {
+					"type": "integer"
+				},
+				"take": {
+					"type": "integer"
+				},
+				"rows": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"Functie": {
+								"type": "string"
+							},
+							"Org_eenheid": {
+								"type": "string"
+							},
+							"Medewerker": {
+								"type": "string"
+							},
+							"Dienstverband": {
+								"type": "integer"
+							},
+							"Kostenplaats": {
+								"type": "string"
+							},
+							"Kostenplaats_sal": {
+								"type": "string"
+							},
+							"Kostendrager": {
+								"type": "string"
+							},
+							"Jaar": {
+								"type": "integer"
+							},
+							"Periode": {
+								"type": "integer"
+							},
+							"Cao_code": {
+								"type": "string"
+							},
+							"Looncomponent": {
+								"type": "integer"
+							},
+							"Omschrijving_looncomponent": {
+								"type": "string"
+							},
+							"Bedrag": {
+								"type": "number"
+							},
+							"Werkgever_code": {
+								"type": "string"
+							},
+							"Einddatum_contract": {
+								"type": "null"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

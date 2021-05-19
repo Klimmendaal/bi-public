@@ -1,0 +1,59 @@
+{
+	"name": "Kostensoort_rapportage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Datalake2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/Referentie"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Kostensoorten rapportage",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "referentie.xlsx",
+				"folderPath": "tabel referentie",
+				"fileSystem": "referentie"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Kostensoortcode min",
+				"type": "String"
+			},
+			{
+				"name": "Kostensoortcode max",
+				"type": "String"
+			},
+			{
+				"name": "Sort1",
+				"type": "String"
+			},
+			{
+				"name": "Verdichting1",
+				"type": "String"
+			},
+			{
+				"name": "Sort2",
+				"type": "String"
+			},
+			{
+				"name": "Verdichting2",
+				"type": "String"
+			},
+			{
+				"name": "Sort3",
+				"type": "String"
+			},
+			{
+				"name": "Verdichting3",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

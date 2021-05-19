@@ -1,0 +1,25 @@
+{
+	"name": "STG_AFAS_Kostensoort_functie",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Datalake2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "2_Staging/AFAS"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "kostensoortfunctie",
+				"folderPath": "dim",
+				"fileSystem": "personeel"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

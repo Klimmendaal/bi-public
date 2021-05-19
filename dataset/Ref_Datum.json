@@ -1,0 +1,89 @@
+{
+	"name": "Ref_Datum",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_az_bi",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "3_Datamarts/Referentie"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Datum_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Datum",
+				"type": "date"
+			},
+			{
+				"name": "DatumVoluit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DagInMaand",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DagInWeek",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Dagnaam",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Maandnaam",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MaandnaamKort",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Maandnummer",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Jaar",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "JaarMaand",
+				"type": "nvarchar"
+			},
+			{
+				"name": "JaarWeek",
+				"type": "nvarchar"
+			},
+			{
+				"name": "IsWerkdag",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "IsWeekeind",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "IsFeestdag",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "per",
+			"table": "dim_datum"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

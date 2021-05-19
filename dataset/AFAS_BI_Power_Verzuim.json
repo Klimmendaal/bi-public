@@ -1,0 +1,85 @@
+{
+	"name": "AFAS_BI_Power_Verzuim",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HttpServer_Afas",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/AFAS"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "BI_Power_Verzuim?take=100000"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"skip": {
+					"type": "integer"
+				},
+				"take": {
+					"type": "integer"
+				},
+				"rows": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"Medewerker": {
+								"type": "string"
+							},
+							"Naam": {
+								"type": "integer"
+							},
+							"BegindatumVerzuimmelding": {
+								"type": "string"
+							},
+							"VerzuimverloopDatum": {
+								"type": "string"
+							},
+							"Einddatum_verzuim": {
+								"type": "string"
+							},
+							"VerzuimsoortCode": {
+								"type": "string"
+							},
+							"VerzuimsoortOmschrijving": {
+								"type": "string"
+							},
+							"AanwezigheidsPercentage": {
+								"type": "number"
+							},
+							"AanwezigheidsPercentage_AT": {
+								"type": "number"
+							},
+							"Datum_uit_dienst": {
+								"type": "null"
+							},
+							"Soort_Medewerker": {
+								"type": "string"
+							},
+							"Reden_verzuim": {
+								"type": "null"
+							},
+							"Vangnetregeling": {
+								"type": "boolean"
+							},
+							"Begindatum_doorlopend_verzuim": {
+								"type": "string"
+							},
+							"Doorlopend_verzuim": {
+								"type": "boolean"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,33 @@
+{
+	"name": "Arts_type",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_Hix",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/HIX"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "CODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "OMSCHR",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VERVALLEN",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "CSZISLIB_ARTSTYPE"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

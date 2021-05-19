@@ -1,0 +1,6 @@
+{
+	"name": "SQLExact",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

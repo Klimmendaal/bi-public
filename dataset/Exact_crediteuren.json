@@ -1,0 +1,586 @@
+{
+	"name": "Exact_crediteuren",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_Exact",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/Exact"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "crdnr",
+				"type": "char"
+			},
+			{
+				"name": "naam",
+				"type": "varchar"
+			},
+			{
+				"name": "adres1",
+				"type": "varchar"
+			},
+			{
+				"name": "adres2",
+				"type": "varchar"
+			},
+			{
+				"name": "adres3",
+				"type": "varchar"
+			},
+			{
+				"name": "postcode",
+				"type": "varchar"
+			},
+			{
+				"name": "woonpl",
+				"type": "varchar"
+			},
+			{
+				"name": "landcode",
+				"type": "char"
+			},
+			{
+				"name": "crdzk",
+				"type": "char"
+			},
+			{
+				"name": "valcode",
+				"type": "char"
+			},
+			{
+				"name": "telnr",
+				"type": "varchar"
+			},
+			{
+				"name": "faxnr",
+				"type": "varchar"
+			},
+			{
+				"name": "cntpers1",
+				"type": "varchar"
+			},
+			{
+				"name": "mv1",
+				"type": "char"
+			},
+			{
+				"name": "prdcode1",
+				"type": "char"
+			},
+			{
+				"name": "vrlttrs1",
+				"type": "varchar"
+			},
+			{
+				"name": "functie1",
+				"type": "varchar"
+			},
+			{
+				"name": "telnrcp1",
+				"type": "varchar"
+			},
+			{
+				"name": "banknr1",
+				"type": "varchar"
+			},
+			{
+				"name": "banknr2",
+				"type": "varchar"
+			},
+			{
+				"name": "pstbanknrc",
+				"type": "varchar"
+			},
+			{
+				"name": "betwijze",
+				"type": "char"
+			},
+			{
+				"name": "tegreknr",
+				"type": "char"
+			},
+			{
+				"name": "dagbknr",
+				"type": "char"
+			},
+			{
+				"name": "crdtext",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "aandacht",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "categorie",
+				"type": "varchar"
+			},
+			{
+				"name": "kredlimiet",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "autombet",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "betcond",
+				"type": "char"
+			},
+			{
+				"name": "blokkeer",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "klantcode",
+				"type": "char"
+			},
+			{
+				"name": "prijslijst",
+				"type": "varchar"
+			},
+			{
+				"name": "ex_artcode",
+				"type": "char"
+			},
+			{
+				"name": "kortingo",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoutcode",
+				"type": "char"
+			},
+			{
+				"name": "taalcode",
+				"type": "char"
+			},
+			{
+				"name": "saldontvwd",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "saldontvwc",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "blznr",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "opensaldo",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "bedrbest",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "land_iso",
+				"type": "char"
+			},
+			{
+				"name": "btw_nummer",
+				"type": "varchar"
+			},
+			{
+				"name": "datumctrl",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "categ_belg",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "statfactor",
+				"type": "char"
+			},
+			{
+				"name": "btwtrans",
+				"type": "char"
+			},
+			{
+				"name": "wijz_btwt",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "stelsel",
+				"type": "char"
+			},
+			{
+				"name": "wijz_stel",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "transact_a",
+				"type": "char"
+			},
+			{
+				"name": "wijz_trs_a",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "transact_b",
+				"type": "char"
+			},
+			{
+				"name": "wijz_trs_b",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "landherk",
+				"type": "char"
+			},
+			{
+				"name": "wijz_herk",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "landoorspr",
+				"type": "char"
+			},
+			{
+				"name": "wijz_oorsp",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "vervoer",
+				"type": "char"
+			},
+			{
+				"name": "wijz_verv",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "plts_ll",
+				"type": "char"
+			},
+			{
+				"name": "wijz_ll",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "intra_lvcd",
+				"type": "char"
+			},
+			{
+				"name": "wijz_levcd",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "trsshpm_cd",
+				"type": "char"
+			},
+			{
+				"name": "wijz_tshpm",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "landabc",
+				"type": "char"
+			},
+			{
+				"name": "wijz_abc",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "int_regio",
+				"type": "char"
+			},
+			{
+				"name": "wijz_regio",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "aant_bstkp",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "kstplcode",
+				"type": "char"
+			},
+			{
+				"name": "bestbev",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "crd_adrnr",
+				"type": "char"
+			},
+			{
+				"name": "geniet_com",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "voornaam",
+				"type": "varchar"
+			},
+			{
+				"name": "telex",
+				"type": "char"
+			},
+			{
+				"name": "verz_op",
+				"type": "char"
+			},
+			{
+				"name": "limiet_bdr",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "maxwis_bdr",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "bet_zkblwi",
+				"type": "char"
+			},
+			{
+				"name": "bet_zkgcd",
+				"type": "char"
+			},
+			{
+				"name": "kostencode",
+				"type": "char"
+			},
+			{
+				"name": "ico_nummer",
+				"type": "char"
+			},
+			{
+				"name": "soort_crd",
+				"type": "char"
+			},
+			{
+				"name": "percentwka",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "sign_datum",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "imocode",
+				"type": "char"
+			},
+			{
+				"name": "participant",
+				"type": "char"
+			},
+			{
+				"name": "fiscode",
+				"type": "varchar"
+			},
+			{
+				"name": "region",
+				"type": "varchar"
+			},
+			{
+				"name": "erklev",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "email",
+				"type": "varchar"
+			},
+			{
+				"name": "internet",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield1",
+				"type": "varchar"
+			},
+			{
+				"name": "invname1",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield2",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield3",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield4",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield5",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield6",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield7",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield8",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield9",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield10",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield11",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield12",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield13",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield14",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield15",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield16",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "freefield17",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "freefield18",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "freefield19",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "freefield20",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "status",
+				"type": "varchar"
+			},
+			{
+				"name": "syscreated",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "syscreator",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sysmodified",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "sysmodifier",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sysguid",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "timestamp",
+				"type": "timestamp"
+			},
+			{
+				"name": "DocumentID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "centr_account",
+				"type": "char"
+			},
+			{
+				"name": "CompanyType",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "CompanyCode",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Credit"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,43 @@
+{
+	"name": "Postcode",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Datalake2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/Referentie"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Postcode",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "referentie.xlsx",
+				"folderPath": "tabel referentie",
+				"fileSystem": "referentie"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "PostcodeNummers",
+				"type": "String"
+			},
+			{
+				"name": "Plaats",
+				"type": "String"
+			},
+			{
+				"name": "Gemeente",
+				"type": "String"
+			},
+			{
+				"name": "Provincie",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

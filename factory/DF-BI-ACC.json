@@ -1,0 +1,9 @@
+{
+	"name": "DF-BI-ACC",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "db9a98dd-93f9-4abf-b25e-8c242890e4dc",
+		"tenantId": "7279bed0-e2a5-453b-9d21-d15dfbc934af"
+	}
+}

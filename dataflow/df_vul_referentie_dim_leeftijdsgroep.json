@@ -1,0 +1,31 @@
+{
+	"name": "df_vul_referentie_dim_leeftijdsgroep",
+	"properties": {
+		"folder": {
+			"name": "Referentie"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Leeftijdsgroep",
+						"type": "DatasetReference"
+					},
+					"name": "Leeftijdsgroep"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Per_leeftijdsgroep",
+						"type": "DatasetReference"
+					},
+					"name": "dimleeftijdsgroep"
+				}
+			],
+			"transformations": [],
+			"script": "source(output(\n\t\tLeeftijd as integer '000',\n\t\tLeeftijdsgroepVernet as string,\n\t\tLeeftijdsgroepPatient as string,\n\t\tGroep1 as string,\n\t\tGroep2 as string,\n\t\tGroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Leeftijdsgroep\nLeeftijdsgroep sink(input(\n\t\tLeeftijdsgroep_key as integer,\n\t\tLeeftijd as integer,\n\t\tLeeftijdsgroepVernet as string,\n\t\tLeeftijdsgroepPatient as string,\n\t\tGroep1 as string,\n\t\tGroep2 as string,\n\t\tGroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tLeeftijdsgroep_key = Leeftijd,\n\t\tLeeftijd,\n\t\tLeeftijdsgroepVernet,\n\t\tLeeftijdsgroepPatient,\n\t\tGroep1,\n\t\tGroep2,\n\t\tGroep3\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> dimleeftijdsgroep"
+		}
+	}
+}

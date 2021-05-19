@@ -1,0 +1,147 @@
+{
+	"name": "df_vul_personeel_feit_formatie",
+	"properties": {
+		"folder": {
+			"name": "Personeel"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "STG_AFAS_Loonverdeling",
+						"type": "DatasetReference"
+					},
+					"name": "STGAFASLoonverdeling"
+				},
+				{
+					"dataset": {
+						"referenceName": "Ref_Datum",
+						"type": "DatasetReference"
+					},
+					"name": "RefDatum"
+				},
+				{
+					"dataset": {
+						"referenceName": "STG_AFAS_Medewerker",
+						"type": "DatasetReference"
+					},
+					"name": "PerMedewerker"
+				},
+				{
+					"dataset": {
+						"referenceName": "Ref_Kostenplaats",
+						"type": "DatasetReference"
+					},
+					"name": "RefKostenplaats"
+				},
+				{
+					"dataset": {
+						"referenceName": "STG_AFAS_Verzuim",
+						"type": "DatasetReference"
+					},
+					"name": "Verzuim"
+				},
+				{
+					"dataset": {
+						"referenceName": "STG_AFAS_Verzuim",
+						"type": "DatasetReference"
+					},
+					"name": "VerzuimVolgenderegel"
+				},
+				{
+					"dataset": {
+						"referenceName": "STG_AFAS_Looncomponenten",
+						"type": "DatasetReference"
+					},
+					"name": "Looncomponenten"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Feit_Formatie",
+						"type": "DatasetReference"
+					},
+					"name": "Formatie"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ExpandRegels"
+				},
+				{
+					"name": "AGGMaanden"
+				},
+				{
+					"name": "DCDatums"
+				},
+				{
+					"name": "DCPeriodekey"
+				},
+				{
+					"name": "DCMeetwaarden"
+				},
+				{
+					"name": "DCNulls"
+				},
+				{
+					"name": "Filter1"
+				},
+				{
+					"name": "DCBerekeningKey"
+				},
+				{
+					"name": "LookupMedewerker"
+				},
+				{
+					"name": "JoinKostenplaats"
+				},
+				{
+					"name": "VerzuimInclEinddatum"
+				},
+				{
+					"name": "VerzuimsetInclEinddatum"
+				},
+				{
+					"name": "VerzuimSubset"
+				},
+				{
+					"name": "VerzuimMaandSplit"
+				},
+				{
+					"name": "Select1"
+				},
+				{
+					"name": "DCZiektedagen"
+				},
+				{
+					"name": "DCNull"
+				},
+				{
+					"name": "FilterOpBegindatum"
+				},
+				{
+					"name": "DCMeetwaardenFTE"
+				},
+				{
+					"name": "AGGMeetwaarden"
+				},
+				{
+					"name": "JoinVerzuimFTE"
+				},
+				{
+					"name": "DCFTEVerzuimMW"
+				}
+			],
+			"script": "source(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tMedewerker as string,\n\t\tDV_nr as long,\n\t\tDV_Begin as string,\n\t\tDV_Eind as string,\n\t\tVlgnr_contract as long,\n\t\tContr_Begin as string,\n\t\tContr_Eind as string,\n\t\tType_contract_code as string,\n\t\tType_contract as string,\n\t\tSoort_medewerker_code as string,\n\t\tSoort_Medewerker as string,\n\t\tDienstbetrekking_code as string,\n\t\tDienstbetrekking as string,\n\t\tFunctie_Begin as string,\n\t\tFunctie_Eind as string,\n\t\tHoofdkostenplaats as string,\n\t\tFormatie_Begin as string,\n\t\tFormatie_Eind as string,\n\t\tParttimePerc as double,\n\t\tUren_week as double,\n\t\tDagen_week as double,\n\t\tKostenplaats as string,\n\t\tOE as string,\n\t\tLoonv_perc as double,\n\t\tFunctie_code as string,\n\t\tFunctie_omschr as string,\n\t\tWerkgever_code as string,\n\t\tWerkgever_naam as string,\n\t\tSalaris_begin as string,\n\t\tSalaris_eind as string,\n\t\tCao_code_regeling as string,\n\t\tCAO_omschrijving as string,\n\t\tHoofd_Functie_code as string,\n\t\tHoofd_Functie_Omschr as string,\n\t\tArbeidsvoorwaarde_code as string,\n\t\tBegindatum_contractketen as string,\n\t\tBegindatum_organigram as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['feit/loonverdeling']) ~> STGAFASLoonverdeling\nsource(output(\n\t\tDatum_key as integer,\n\t\tDatum as date,\n\t\tDatumVoluit as string,\n\t\tDagInMaand as integer,\n\t\tDagInWeek as integer,\n\t\tDagnaam as string,\n\t\tMaandnaam as string,\n\t\tMaandnaamKort as string,\n\t\tMaandnummer as integer,\n\t\tJaar as integer,\n\t\tJaarMaand as string,\n\t\tJaarWeek as string,\n\t\tIsWerkdag as integer,\n\t\tIsWeekeind as integer,\n\t\tIsFeestdag as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> RefDatum\nsource(output(\n\t\tMedewerker as string,\n\t\tRoepnaam as string,\n\t\tVoornaam as string,\n\t\tVoorletters as string,\n\t\tVoorvoegsel as string,\n\t\tAchternaam as string,\n\t\tGeboortenaam_apart_vastleggen as boolean,\n\t\tVoorv_geb_naam as string,\n\t\tGeboortenaam as string,\n\t\tVoorvoegsel_partner as string,\n\t\tGeb_naam_partner as string,\n\t\tNaamgebruik_code as string,\n\t\tNaamgebruik as string,\n\t\tGeslacht_code as string,\n\t\tGeslacht as string,\n\t\tNationaliteit_code as string,\n\t\tNationaliteit as string,\n\t\tGeboortedatum as string,\n\t\tGeboorteland as string,\n\t\tGeboorteplaats as string,\n\t\tBSN as string,\n\t\tBurgerlijke_staat_code as string,\n\t\tBurgerlijke_staat as string,\n\t\tHuwelijksdatum as string,\n\t\tDatum_scheiding as timestamp,\n\t\tOverlijdensdatum as timestamp,\n\t\tTelefoonnr_prive as string,\n\t\tMobiel_werk as string,\n\t\tMobiel_prive as string,\n\t\t{E-mail_prive} as string,\n\t\tAchternaam__init_voorvoegsel__roepnaam_ as string,\n\t\tStraat as string,\n\t\tHuisnummer as long,\n\t\tToev_aan_huisnr as string,\n\t\tPostcode as string,\n\t\tWoonplaats as string,\n\t\tLand as string,\n\t\tUPN as string,\n\t\t{E-mail_werk} as string,\n\t\tskip as long,\n\t\ttake as long\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['dim/medewerker']) ~> PerMedewerker\nsource(output(\n\t\tKostenplaats_key as string,\n\t\tKostenplaatscode as string,\n\t\tKostenplaatsomschrijving as string,\n\t\tBegindatum as date,\n\t\tEinddatum as date,\n\t\tNiveau1 as string,\n\t\tNiveau2 as string,\n\t\tRegio as string,\n\t\tNiveau3 as string,\n\t\tNiveau4 as string,\n\t\tLocatie as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> RefKostenplaats\nsource(output(\n\t\tMedewerker as string,\n\t\tNaam as long,\n\t\tBegindatumVerzuimmelding as timestamp,\n\t\tVerzuimverloopDatum as timestamp,\n\t\tEinddatum_verzuim as timestamp,\n\t\tVerzuimsoortCode as string,\n\t\tVerzuimsoortOmschrijving as string,\n\t\tAanwezigheidsPercentage as double,\n\t\tAanwezigheidsPercentage_AT as double,\n\t\tDatum_uit_dienst as timestamp,\n\t\tSoort_Medewerker as string,\n\t\tReden_verzuim as string,\n\t\tVangnetregeling as boolean,\n\t\tBegindatum_doorlopend_verzuim as timestamp,\n\t\tDoorlopend_verzuim as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['feit/verzuim']) ~> Verzuim\nsource(output(\n\t\tMedewerker as string,\n\t\tNaam as long,\n\t\tBegindatumVerzuimmelding as timestamp,\n\t\tVerzuimverloopDatum as timestamp,\n\t\tEinddatum_verzuim as timestamp,\n\t\tVerzuimsoortCode as string,\n\t\tVerzuimsoortOmschrijving as string,\n\t\tAanwezigheidsPercentage as double,\n\t\tAanwezigheidsPercentage_AT as double,\n\t\tDatum_uit_dienst as timestamp,\n\t\tSoort_Medewerker as string,\n\t\tReden_verzuim as string,\n\t\tVangnetregeling as boolean,\n\t\tBegindatum_doorlopend_verzuim as timestamp,\n\t\tDoorlopend_verzuim as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['feit/verzuim']) ~> VerzuimVolgenderegel\nsource(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tFunctie as string,\n\t\tOrg_eenheid as string,\n\t\tMedewerker as string,\n\t\tDienstverband as long,\n\t\tKostenplaats as string,\n\t\tKostenplaats_sal as string,\n\t\tKostendrager as string,\n\t\tJaar as long,\n\t\tPeriode as long,\n\t\tCao_code as string,\n\t\tLooncomponent as long,\n\t\tOmschrijving_looncomponent as string,\n\t\tBedrag as double,\n\t\tWerkgever_code as string,\n\t\tEinddatum_contract as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['dim/looncomponenten']) ~> Looncomponenten\nDCNulls, DCPeriodekey join(BegindatumSalaris <= max_datum\n\t&& EinddatumSalaris >= min_datum,\n\tjoinType:'left',\n\tbroadcast: 'both')~> ExpandRegels\nRefDatum aggregate(groupBy(Jaar,\n\t\tMaandnummer),\n\tmin_datum = min(Datum),\n\t\tmax_datum = max(Datum),\n\t\tdagen_in_maand = count(Datum_key)) ~> AGGMaanden\nFilter1 derive(BegindatumSalaris = toDate(left(Salaris_begin,10),'yyyy-MM-dd'),\n\t\tEinddatumSalaris = toDate(left(Salaris_eind,10),'yyyy-MM-dd'),\n\t\tBegindatum_key = toInteger(left(Salaris_begin,4) + substring(Salaris_begin,6,2) + substring(Salaris_begin,9,2)),\n\t\tEinddatum_key = toInteger(left(Salaris_eind,4) + substring(Salaris_eind,6,2) + substring(Salaris_eind,9,2)),\n\t\tDV_Begindatum = toDate(left(DV_Begin,10),'yyyy-MM-dd'),\n\t\tDV_Einddatum = toDate(left(DV_Eind,10),'yyyy-MM-dd')) ~> DCDatums\nAGGMaanden derive(Periode_key = (Jaar * 10000) + (Maandnummer * 100) + 1) ~> DCPeriodekey\nJoinKostenplaats derive(FTEVast = 1 * (ParttimePerc / 100.00) * (Loonv_perc / 100)) ~> DCMeetwaarden\nLookupMedewerker derive(EinddatumSalaris = iif(isNull(EinddatumSalaris), toDate('99991231','yyyyMMdd'),EinddatumSalaris)) ~> DCNulls\nSTGAFASLoonverdeling filter(1==1) ~> Filter1\nDCMeetwaarden derive(Dienstjaar_key = toString(toInteger(monthsBetween(min_datum, DV_Begindatum) / 12)) + '|' + toString(toInteger(monthsBetween(min_datum,DV_Begindatum)) % 12),\n\t\tLeeftijd_key = toInteger(monthsBetween(min_datum, toTimestamp(toDate(left(Geboortedatum,10),'yyyy-MM-dd'))) / 12),\n\t\tPostcode_key = left(Postcode,4),\n\t\tInstroom = iif((year(toTimestamp(DV_Begindatum))*100) + month(toTimestamp(DV_Begindatum)) == toInteger(Periode_key / 100), PerMedewerker@Medewerker, ''),\n\t\tUitstroom = iif((year(toTimestamp(DV_Einddatum))*100) + month(toTimestamp(DV_Einddatum)) == toInteger(Periode_key / 100), PerMedewerker@Medewerker, ''),\n\t\tmin_datum = min_datum) ~> DCBerekeningKey\nDCDatums, PerMedewerker join(STGAFASLoonverdeling@Medewerker == PerMedewerker@Medewerker,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> LookupMedewerker\nExpandRegels, RefKostenplaats join(Kostenplaats == Kostenplaatscode\n\t&& min_datum >= Begindatum\n\t&& min_datum <= Einddatum,\n\tjoinType:'left',\n\tbroadcast: 'both')~> JoinKostenplaats\nVerzuim, VerzuimSubset join(Medewerker == V_Medewerker\n\t&& BegindatumVerzuimmelding == V_BegindatumVerzuimmelding\n\t&& VerzuimverloopDatum < V_VerzuimverloopDatum,\n\tjoinType:'left',\n\tbroadcast: 'both')~> VerzuimInclEinddatum\nFilterOpBegindatum filter(Nr ==1) ~> VerzuimsetInclEinddatum\nVerzuimVolgenderegel select(mapColumn(\n\t\tV_Medewerker = Medewerker,\n\t\tV_BegindatumVerzuimmelding = BegindatumVerzuimmelding,\n\t\tV_VerzuimverloopDatum = VerzuimverloopDatum\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> VerzuimSubset\nSelect1, DCPeriodekey join(VerzuimverloopBegindatum <= max_datum\n\t&& VerzuimverloopEinddatum >= min_datum,\n\tjoinType:'left',\n\tbroadcast: 'both')~> VerzuimMaandSplit\nDCNull select(mapColumn(\n\t\tMedewerker,\n\t\tNaam,\n\t\tBegindatumVerzuimmelding,\n\t\tVerzuimverloopBegindatum = VerzuimverloopDatum,\n\t\tVerzuimverloopEinddatum = V_VerzuimverloopDatum,\n\t\tEinddatum_verzuim,\n\t\tVerzuimsoortCode,\n\t\tVerzuimsoortOmschrijving,\n\t\tAanwezigheidsPercentage,\n\t\tAanwezigheidsPercentage_AT,\n\t\tDatum_uit_dienst,\n\t\tSoort_Medewerker,\n\t\tReden_verzuim,\n\t\tVangnetregeling,\n\t\tBegindatum_doorlopend_verzuim,\n\t\tDoorlopend_verzuim,\n\t\tNr\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nVerzuimMaandSplit derive(AantalDagen = (dayOfMonth(iif(VerzuimverloopEinddatum > max_datum, max_datum, VerzuimverloopEinddatum)) - dayOfMonth(iif(VerzuimverloopBegindatum < min_datum, min_datum, VerzuimverloopBegindatum))) + 1) ~> DCZiektedagen\nVerzuimsetInclEinddatum derive(V_VerzuimverloopDatum = iif(isNull(V_VerzuimverloopDatum), iif(isNull(Einddatum_verzuim),iif(currentDate() < toDate(BegindatumVerzuimmelding), toDate(BegindatumVerzuimmelding), currentDate()),toDate(Einddatum_verzuim)), toDate(V_VerzuimverloopDatum)),\n\t\tVerzuimverloopDatum = toDate(VerzuimverloopDatum)) ~> DCNull\nVerzuimInclEinddatum window(over(Medewerker,\n\t\tBegindatumVerzuimmelding,\n\t\tVerzuimverloopDatum),\n\tasc(V_VerzuimverloopDatum, false),\n\tNr = rowNumber()) ~> FilterOpBegindatum\nDCZiektedagen derive(DagenZwangerschapsverlof = iif(VerzuimsoortCode == \"ZW\", AantalDagen, 0),\n\t\tDagenZiek = iif(VerzuimsoortCode == \"Z\", AantalDagen, 0),\n\t\tDagenOverig = iif(VerzuimsoortCode != \"Z\", iif(VerzuimsoortCode != \"ZW\", AantalDagen, 0), 0)) ~> DCMeetwaardenFTE\nDCMeetwaardenFTE aggregate(groupBy(Medewerker,\n\t\tPeriode_key,\n\t\tVerzuimsoortCode,\n\t\tAanwezigheidsPercentage,\n\t\tAanwezigheidsPercentage_AT),\n\tAantalDagen = sum(AantalDagen),\n\t\tMaandPerc = sum(AantalDagen) / avg(dagen_in_maand),\n\t\tPercDagenZiek = sum(DagenZiek)  / avg(dagen_in_maand),\n\t\tPercDagenZwangerschapsverlof = sum(DagenZwangerschapsverlof)  / avg(dagen_in_maand),\n\t\tPercDagenOverig = sum(DagenOverig)  / avg(dagen_in_maand)) ~> AGGMeetwaarden\nDCBerekeningKey, AGGMeetwaarden join(PerMedewerker@Medewerker == AGGMeetwaarden@Medewerker\n\t&& DCPeriodekey@Periode_key == AGGMeetwaarden@Periode_key,\n\tjoinType:'left',\n\tbroadcast: 'both')~> JoinVerzuimFTE\nJoinVerzuimFTE derive(FTEZwanger = PercDagenZwangerschapsverlof * FTEVast) ~> DCFTEVerzuimMW\nDCFTEVerzuimMW sink(input(\n\t\tMedewerker_key as string,\n\t\tHerkomst_key as integer,\n\t\tLeeftijd_key as integer,\n\t\tInstroom as string,\n\t\tUitstroom as string,\n\t\tDienstjaar_key as integer,\n\t\tPeriode_key as integer,\n\t\tBegindatum_key as integer,\n\t\tEinddatum_key as integer,\n\t\tKostenplaats_key as string,\n\t\tKostensoort_key as string,\n\t\tHoofdkostenplaats_key as string,\n\t\tCAO_key as string,\n\t\tContracttype_key as string,\n\t\tMedewerkersoort_key as string,\n\t\tFunctie_key as string,\n\t\tDienstverbandbegin as timestamp,\n\t\tDienstverbandeind as timestamp,\n\t\tFTEVast as decimal(18,2),\n\t\tFTERealisatie as decimal(18,2),\n\t\tFTEZwangerschapsverlof as decimal(18,2),\n\t\tFTEOuderschapsverlof as decimal(18,2),\n\t\tFTEGeboorteverlof as decimal(18,2),\n\t\tFTEOnbetaaldverlof as decimal(18,2),\n\t\tFTEMeeruren as decimal(18,2),\n\t\tFTEOproepuren as decimal(18,2),\n\t\tFTEOveruren as decimal(18,2),\n\t\tfeit_formatieid as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tMedewerker_key = Medewerker,\n\t\tPeriode_key,\n\t\tCAO_key = Cao_code_regeling,\n\t\tBegindatum_key,\n\t\tEinddatum_key,\n\t\tContracttype_key = Type_contract_code,\n\t\tMedewerkersoort_key = Soort_medewerker_code,\n\t\tDienstverbandbegin = DV_Begin,\n\t\tDienstverbandeind = DV_Eind,\n\t\tFTEVast,\n\t\tFunctie_key = Functie_code,\n\t\tDienstjaar_key,\n\t\tInstroom,\n\t\tUitstroom,\n\t\tLeeftijd_key,\n\t\tHerkomst_key = Postcode_key,\n\t\tKostenplaats_key,\n\t\tFTEZwangerschapsverlof = FTEZwanger\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Formatie\nAGGMeetwaarden sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+		}
+	}
+}

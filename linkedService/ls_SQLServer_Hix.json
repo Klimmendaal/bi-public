@@ -1,0 +1,17 @@
+{
+	"name": "ls_SQLServer_Hix",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=sqlaolsnhix;initial catalog=hix_acc",
+			"userName": "gkld\\svc-azure-ls-hix",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI2ZDk1MWViNy1jYTE4LTRmMjktYjMzZi1lYWQ2OTU2NjQzOTkiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IR-SQL-Klimmendaal",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

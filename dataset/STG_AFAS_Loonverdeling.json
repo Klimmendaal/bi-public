@@ -1,0 +1,25 @@
+{
+	"name": "STG_AFAS_Loonverdeling",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Datalake2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "2_Staging/AFAS"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "loonverdeling",
+				"folderPath": "feit",
+				"fileSystem": "personeel"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

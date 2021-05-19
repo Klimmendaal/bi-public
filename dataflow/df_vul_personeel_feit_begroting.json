@@ -1,0 +1,58 @@
+{
+	"name": "df_vul_personeel_feit_begroting",
+	"properties": {
+		"folder": {
+			"name": "Personeel"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "formatiebegroting",
+						"type": "DatasetReference"
+					},
+					"name": "Formatiebegroting"
+				},
+				{
+					"dataset": {
+						"referenceName": "Ref_Datum",
+						"type": "DatasetReference"
+					},
+					"name": "maanden"
+				},
+				{
+					"dataset": {
+						"referenceName": "Ref_Kostenplaats",
+						"type": "DatasetReference"
+					},
+					"name": "RefKostenplaats"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Feit_Begroting",
+						"type": "DatasetReference"
+					},
+					"name": "DMFeitBegroting"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AGGMaanden"
+				},
+				{
+					"name": "MaandSplit"
+				},
+				{
+					"name": "DCVelden"
+				},
+				{
+					"name": "Kostenplaats"
+				}
+			],
+			"script": "source(output(\n\t\tkostenplaats as string,\n\t\tkostensoort as string,\n\t\t{FTE begroot} as string,\n\t\tbegin as date,\n\t\teind as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['tabel referentie/referentie.xlsx']) ~> Formatiebegroting\nsource(output(\n\t\tDatum_key as integer,\n\t\tDatum as date,\n\t\tDatumVoluit as string,\n\t\tDagInMaand as integer,\n\t\tDagInWeek as integer,\n\t\tDagnaam as string,\n\t\tMaandnaam as string,\n\t\tMaandnaamKort as string,\n\t\tMaandnummer as integer,\n\t\tJaar as integer,\n\t\tJaarMaand as string,\n\t\tJaarWeek as string,\n\t\tIsWerkdag as integer,\n\t\tIsWeekeind as integer,\n\t\tIsFeestdag as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> maanden\nsource(output(\n\t\tKostenplaats_key as string,\n\t\tKostenplaatscode as string,\n\t\tKostenplaatsomschrijving as string,\n\t\tBegindatum as date,\n\t\tEinddatum as date,\n\t\tNiveau1 as string,\n\t\tNiveau2 as string,\n\t\tRegio as string,\n\t\tNiveau3 as string,\n\t\tNiveau4 as string,\n\t\tLocatie as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> RefKostenplaats\nmaanden aggregate(groupBy(Jaar,\n\t\tMaandnummer),\n\tmin_datum = min(Datum),\n\t\tmax_datum = max(Datum),\n\t\tDatum_key = min(Datum_key)) ~> AGGMaanden\nFormatiebegroting, AGGMaanden join(begin <= max_datum\n\t&& eind >= min_datum,\n\tjoinType:'inner',\n\tbroadcast: 'both')~> MaandSplit\nMaandSplit derive(Kostensoort_key = kostensoort,\n\t\tFTEBegroot = toDecimal({FTE begroot},18,3)) ~> DCVelden\nDCVelden, RefKostenplaats join(min_datum <= Einddatum\n\t&& min_datum >= Begindatum\n\t&& kostenplaats == Kostenplaatscode,\n\tjoinType:'left',\n\tbroadcast: 'both')~> Kostenplaats\nKostenplaats sink(input(\n\t\tKostenplaats_key as string,\n\t\tKostensoort_key as string,\n\t\tPeriode_key as integer,\n\t\tFTEBegroot as decimal(18,2),\n\t\tfeit_begrotingid as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tKostenplaats_key,\n\t\tKostensoort_key,\n\t\tPeriode_key = Datum_key,\n\t\tFTEBegroot\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> DMFeitBegroting"
+		}
+	}
+}

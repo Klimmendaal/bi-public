@@ -1,0 +1,59 @@
+{
+	"name": "Organisatie",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Datalake2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/Referentie"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Organisatie",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "referentie.xlsx",
+				"folderPath": "tabel referentie",
+				"fileSystem": "referentie"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "kostenplaats",
+				"type": "String"
+			},
+			{
+				"name": "N1",
+				"type": "String"
+			},
+			{
+				"name": "N2",
+				"type": "String"
+			},
+			{
+				"name": "regio",
+				"type": "String"
+			},
+			{
+				"name": "N3",
+				"type": "String"
+			},
+			{
+				"name": "N4",
+				"type": "String"
+			},
+			{
+				"name": "begin",
+				"type": "String"
+			},
+			{
+				"name": "einde",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

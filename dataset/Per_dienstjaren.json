@@ -1,0 +1,47 @@
+{
+	"name": "Per_dienstjaren",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_az_bi",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "3_Datamarts/Referentie"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Dienstjaar_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Jaar",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Maand",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Groep1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Groep2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Groep3",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "per",
+			"table": "dim_dienstjaar"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,47 @@
+{
+	"name": "Dienstjaren",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Datalake2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/Referentie"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Dienstjaren",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "referentie.xlsx",
+				"folderPath": "tabel referentie",
+				"fileSystem": "referentie"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "jaar",
+				"type": "String"
+			},
+			{
+				"name": "maand",
+				"type": "String"
+			},
+			{
+				"name": "groep1",
+				"type": "String"
+			},
+			{
+				"name": "groep2",
+				"type": "String"
+			},
+			{
+				"name": "groep3",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

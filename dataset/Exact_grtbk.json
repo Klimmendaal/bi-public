@@ -1,0 +1,520 @@
+{
+	"name": "Exact_grtbk",
+	"properties": {
+		"description": "Kostensoorten",
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_Exact",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/Exact"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "reknr",
+				"type": "char"
+			},
+			{
+				"name": "oms25_0",
+				"type": "varchar"
+			},
+			{
+				"name": "oms25_1",
+				"type": "varchar"
+			},
+			{
+				"name": "oms25_2",
+				"type": "varchar"
+			},
+			{
+				"name": "oms25_3",
+				"type": "varchar"
+			},
+			{
+				"name": "oms25_4",
+				"type": "varchar"
+			},
+			{
+				"name": "bal_vw",
+				"type": "char"
+			},
+			{
+				"name": "debcrd",
+				"type": "char"
+			},
+			{
+				"name": "subtotrek",
+				"type": "char"
+			},
+			{
+				"name": "gbktext",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "btw_code",
+				"type": "char"
+			},
+			{
+				"name": "projectrek",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "kstplrek",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "kstdrrek",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "aantallen",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "omzrek",
+				"type": "char"
+			},
+			{
+				"name": "type_rek",
+				"type": "char"
+			},
+			{
+				"name": "mineraal",
+				"type": "char"
+			},
+			{
+				"name": "blokkeer",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "herwaard",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "verdicht",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "blznr",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "perc_naf",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "reknr_naf",
+				"type": "char"
+			},
+			{
+				"name": "perc_prive",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "reknr_priv",
+				"type": "char"
+			},
+			{
+				"name": "bkjrcode",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "bkjr_mut",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "afletteren",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "aflet_mut",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "act_rek",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "type_com",
+				"type": "char"
+			},
+			{
+				"name": "std_kstpl",
+				"type": "char"
+			},
+			{
+				"name": "std_kstdr",
+				"type": "char"
+			},
+			{
+				"name": "aandacht",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "wisselrek",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "type_rek2",
+				"type": "char"
+			},
+			{
+				"name": "wijz_reg",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "reknr_l",
+				"type": "char"
+			},
+			{
+				"name": "prnbifunc",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "afsreknr",
+				"type": "char"
+			},
+			{
+				"name": "scheme_type",
+				"type": "char"
+			},
+			{
+				"name": "analyt_acc",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "reknr_2",
+				"type": "char"
+			},
+			{
+				"name": "freefield1",
+				"type": "char"
+			},
+			{
+				"name": "freefield2",
+				"type": "char"
+			},
+			{
+				"name": "freefield3",
+				"type": "char"
+			},
+			{
+				"name": "freefield4",
+				"type": "char"
+			},
+			{
+				"name": "freefield5",
+				"type": "char"
+			},
+			{
+				"name": "freefield6",
+				"type": "char"
+			},
+			{
+				"name": "freefield7",
+				"type": "char"
+			},
+			{
+				"name": "freefield8",
+				"type": "char"
+			},
+			{
+				"name": "freefield9",
+				"type": "char"
+			},
+			{
+				"name": "freefield10",
+				"type": "char"
+			},
+			{
+				"name": "freefield11",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield12",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield13",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield14",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield15",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield16",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "freefield17",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "freefield18",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "freefield19",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "freefield20",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "statusdate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "centr_account",
+				"type": "char"
+			},
+			{
+				"name": "IntBalanceDebit",
+				"type": "char"
+			},
+			{
+				"name": "subclass_pass",
+				"type": "char"
+			},
+			{
+				"name": "OffBalSubClassCredit",
+				"type": "char"
+			},
+			{
+				"name": "IsPersonalAccount",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "TypeAdjustmentInflation",
+				"type": "char"
+			},
+			{
+				"name": "DocumentID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "alternativeledger",
+				"type": "char"
+			},
+			{
+				"name": "UseResource",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "UseProject",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "UseItem",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "UseDebtor",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "UseCreditor",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "UseIntercompany",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "CompanyCode",
+				"type": "char"
+			},
+			{
+				"name": "AccountCode",
+				"type": "char"
+			},
+			{
+				"name": "AccountReportCategory",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AccountConversionType",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Class_01",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_02",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_03",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_04",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_05",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_06",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_07",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_08",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_09",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_10",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_11",
+				"type": "varchar"
+			},
+			{
+				"name": "Class_12",
+				"type": "varchar"
+			},
+			{
+				"name": "UseIBActive",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "UseCostcenterAllocation",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "AssociateGL",
+				"type": "char"
+			},
+			{
+				"name": "ShowNotes",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "ExcludeVATListing",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Division",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "syscreated",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "syscreator",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sysmodified",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "sysmodifier",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sysguid",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "timestamp",
+				"type": "timestamp"
+			},
+			{
+				"name": "MSICCode",
+				"type": "varchar"
+			},
+			{
+				"name": "TaxonomyCode",
+				"type": "varchar"
+			},
+			{
+				"name": "TariffCode",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "grtbk"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

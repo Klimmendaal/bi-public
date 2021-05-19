@@ -1,0 +1,151 @@
+{
+	"name": "AFAS_BI_Power_Loonverdeling",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HttpServer_Afas",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/AFAS"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "BI_Power_Loonverdeling?take=100000"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"skip": {
+					"type": "integer"
+				},
+				"take": {
+					"type": "integer"
+				},
+				"rows": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"Medewerker": {
+								"type": "string"
+							},
+							"DV_nr": {
+								"type": "integer"
+							},
+							"DV_Begin": {
+								"type": "string"
+							},
+							"DV_Eind": {
+								"type": "string"
+							},
+							"Vlgnr_contract": {
+								"type": "integer"
+							},
+							"Contr_Begin": {
+								"type": "string"
+							},
+							"Contr_Eind": {
+								"type": "string"
+							},
+							"Type_contract_code": {
+								"type": "string"
+							},
+							"Type_contract": {
+								"type": "string"
+							},
+							"Soort_medewerker_code": {
+								"type": "string"
+							},
+							"Soort_Medewerker": {
+								"type": "string"
+							},
+							"Dienstbetrekking_code": {
+								"type": "string"
+							},
+							"Dienstbetrekking": {
+								"type": "string"
+							},
+							"Functie_Begin": {
+								"type": "string"
+							},
+							"Functie_Eind": {
+								"type": "string"
+							},
+							"Hoofdkostenplaats": {
+								"type": "string"
+							},
+							"Formatie_Begin": {
+								"type": "string"
+							},
+							"Formatie_Eind": {
+								"type": "string"
+							},
+							"ParttimePerc": {
+								"type": "number"
+							},
+							"Uren_week": {
+								"type": "number"
+							},
+							"Dagen_week": {
+								"type": "number"
+							},
+							"Kostenplaats": {
+								"type": "string"
+							},
+							"OE": {
+								"type": "string"
+							},
+							"Loonv_perc": {
+								"type": "number"
+							},
+							"Functie_code": {
+								"type": "string"
+							},
+							"Functie_omschr": {
+								"type": "string"
+							},
+							"Werkgever_code": {
+								"type": "string"
+							},
+							"Werkgever_naam": {
+								"type": "string"
+							},
+							"Salaris_begin": {
+								"type": "string"
+							},
+							"Salaris_eind": {
+								"type": "string"
+							},
+							"Cao_code_regeling": {
+								"type": "string"
+							},
+							"CAO_omschrijving": {
+								"type": "string"
+							},
+							"Hoofd_Functie_code": {
+								"type": "string"
+							},
+							"Hoofd_Functie_Omschr": {
+								"type": "string"
+							},
+							"Arbeidsvoorwaarde_code": {
+								"type": "string"
+							},
+							"Begindatum_contractketen": {
+								"type": "string"
+							},
+							"Begindatum_organigram": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

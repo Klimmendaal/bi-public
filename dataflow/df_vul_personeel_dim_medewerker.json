@@ -1,0 +1,35 @@
+{
+	"name": "df_vul_personeel_dim_medewerker",
+	"properties": {
+		"folder": {
+			"name": "Personeel"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "STG_AFAS_Medewerker",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Per_Medewerker",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumn1"
+				}
+			],
+			"script": "source(output(\n\t\tMedewerker as string,\n\t\tRoepnaam as string,\n\t\tVoornaam as string,\n\t\tVoorletters as string,\n\t\tVoorvoegsel as string,\n\t\tAchternaam as string,\n\t\tVoorv_geb_naam as string,\n\t\tGeboortenaam as string,\n\t\tVoorvoegsel_partner as string,\n\t\tGeb_naam_partner as string,\n\t\tNaamgebruik_code as string,\n\t\tNaamgebruik as string,\n\t\tGeslacht_code as string,\n\t\tGeslacht as string,\n\t\tNationaliteit_code as string,\n\t\tNationaliteit as string,\n\t\tGeboortedatum as timestamp,\n\t\tGeboorteland as string,\n\t\tGeboorteplaats as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['dim/medewerker']) ~> source1\nsource1 derive(Medewerker_key = Medewerker) ~> DerivedColumn1\nDerivedColumn1 sink(input(\n\t\tMedewerker_key as string,\n\t\tMedewerkernaam as string,\n\t\tGeslacht as string,\n\t\tGeboortedatum as date,\n\t\tPersoneelsnummer as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: true,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tMedewerker_key,\n\t\tMedewerkernaam = Achternaam,\n\t\tGeslacht,\n\t\tGeboortedatum,\n\t\tPersoneelsnummer = Medewerker\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+		}
+	}
+}

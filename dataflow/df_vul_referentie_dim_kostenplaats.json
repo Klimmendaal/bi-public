@@ -1,0 +1,35 @@
+{
+	"name": "df_vul_referentie_dim_kostenplaats",
+	"properties": {
+		"folder": {
+			"name": "Referentie"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Organisatie",
+						"type": "DatasetReference"
+					},
+					"name": "ExcelOrganisatie"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Ref_Kostenplaats",
+						"type": "DatasetReference"
+					},
+					"name": "RefKostenplaats"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Kostenplaatskey"
+				}
+			],
+			"script": "source(output(\n\t\tkostenplaats as string,\n\t\tN1 as string,\n\t\tN2 as string,\n\t\tregio as string,\n\t\tN3 as string,\n\t\tN4 as string,\n\t\tbegin as date,\n\t\teinde as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ExcelOrganisatie\nExcelOrganisatie derive(Kostenplaats_key = kostenplaats + '|' + toString((year(begin) * 10000) + (month(begin) * 100) + dayOfMonth(begin))) ~> Kostenplaatskey\nKostenplaatskey sink(input(\n\t\tKostenplaats_key as string,\n\t\tKostenplaatscode as string,\n\t\tKostenplaatsomschrijving as string,\n\t\tBegindatum as date,\n\t\tEinddatum as date,\n\t\tNiveau1 as string,\n\t\tNiveau2 as string,\n\t\tRegio as string,\n\t\tNiveau3 as string,\n\t\tNiveau4 as string,\n\t\tLocatie as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tRegio = regio,\n\t\tKostenplaats_key,\n\t\tKostenplaatscode = kostenplaats,\n\t\tKostenplaatsomschrijving = kostenplaats,\n\t\tNiveau1 = N1,\n\t\tNiveau2 = N2,\n\t\tRegio = regio,\n\t\tNiveau3 = N3,\n\t\tNiveau4 = N4,\n\t\tBegindatum = begin,\n\t\tEinddatum = einde\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> RefKostenplaats"
+		}
+	}
+}

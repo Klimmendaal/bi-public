@@ -1,0 +1,822 @@
+{
+	"name": "Exact_gbkmut",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_Exact",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/Exact"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "bkjrcode",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "reknr",
+				"type": "char"
+			},
+			{
+				"name": "datum",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "periode",
+				"type": "char"
+			},
+			{
+				"name": "bkstnr",
+				"type": "varchar"
+			},
+			{
+				"name": "dagbknr",
+				"type": "char"
+			},
+			{
+				"name": "oms25",
+				"type": "varchar"
+			},
+			{
+				"name": "bdr_hfl",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "btw_code",
+				"type": "char"
+			},
+			{
+				"name": "btw_bdr_3",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "btw_grond",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "tegreknr",
+				"type": "char"
+			},
+			{
+				"name": "debnr",
+				"type": "char"
+			},
+			{
+				"name": "crdnr",
+				"type": "char"
+			},
+			{
+				"name": "kstplcode",
+				"type": "char"
+			},
+			{
+				"name": "kstdrcode",
+				"type": "char"
+			},
+			{
+				"name": "aantal",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "valcode",
+				"type": "char"
+			},
+			{
+				"name": "exvalcode",
+				"type": "char"
+			},
+			{
+				"name": "koers",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "wisselkrs",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "koers3",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "bdr_val",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "dbk_verwnr",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "verwerknrl",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "volgnr5",
+				"type": "char"
+			},
+			{
+				"name": "regel",
+				"type": "char"
+			},
+			{
+				"name": "regelcode",
+				"type": "char"
+			},
+			{
+				"name": "storno",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "bkstnr_sub",
+				"type": "varchar"
+			},
+			{
+				"name": "betcond",
+				"type": "char"
+			},
+			{
+				"name": "btwper",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "oorsprong",
+				"type": "char"
+			},
+			{
+				"name": "vlgn_gbk2",
+				"type": "varchar"
+			},
+			{
+				"name": "btw_grval",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "afldat",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "docnumber",
+				"type": "varchar"
+			},
+			{
+				"name": "docdate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "exvalbdr",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "entryorigin",
+				"type": "char"
+			},
+			{
+				"name": "vervdatkrd",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "vervdtkrd2",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "vervdatfak",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "kredbep",
+				"type": "char"
+			},
+			{
+				"name": "bdrkredbep",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "bdrkredbp2",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "betaalref",
+				"type": "varchar"
+			},
+			{
+				"name": "stat_nr",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "btw_nummer",
+				"type": "varchar"
+			},
+			{
+				"name": "rapnr",
+				"type": "char"
+			},
+			{
+				"name": "raplist",
+				"type": "char"
+			},
+			{
+				"name": "artcode",
+				"type": "varchar"
+			},
+			{
+				"name": "faktuurnr",
+				"type": "char"
+			},
+			{
+				"name": "bud_vers",
+				"type": "char"
+			},
+			{
+				"name": "syscreated",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "syscreator",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ReminderCount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sysmodified",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ReminderLayout",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LastReminderDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "sysmodifier",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sysguid",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "BlockItem",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "timestamp",
+				"type": "timestamp"
+			},
+			{
+				"name": "CompanyCode",
+				"type": "char"
+			},
+			{
+				"name": "res_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TransactionType",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CurrencyCode",
+				"type": "char"
+			},
+			{
+				"name": "Rate",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "bankacc",
+				"type": "varchar"
+			},
+			{
+				"name": "AmountCentral",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "VatBaseAmountCentral",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "PaymentMethod",
+				"type": "char"
+			},
+			{
+				"name": "VatAmountCentral",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "CurrencyAliasAc",
+				"type": "char"
+			},
+			{
+				"name": "DocumentID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "facode",
+				"type": "varchar"
+			},
+			{
+				"name": "transtype",
+				"type": "char"
+			},
+			{
+				"name": "transsubtype",
+				"type": "char"
+			},
+			{
+				"name": "freefield1",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield2",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield3",
+				"type": "varchar"
+			},
+			{
+				"name": "freefield4",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "freefield5",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "project",
+				"type": "varchar"
+			},
+			{
+				"name": "DocAttachmentID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "cmp_wwn",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "warehouse",
+				"type": "char"
+			},
+			{
+				"name": "orderdebtor",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "PayrollSubtype",
+				"type": "char"
+			},
+			{
+				"name": "ReconcileNumber",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "warehouse_location",
+				"type": "char"
+			},
+			{
+				"name": "EntryGuid",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "TransactionGuid",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "TransactionGuid2",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "Checked",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Reviewed",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "BankTransactionGUID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "StockTrackingNumber",
+				"type": "char"
+			},
+			{
+				"name": "StartTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "EndTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ReportingDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CashRegisterAccount",
+				"type": "varchar"
+			},
+			{
+				"name": "Original_Quantity",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "comp_code",
+				"type": "char"
+			},
+			{
+				"name": "Selcode",
+				"type": "char"
+			},
+			{
+				"name": "Unitcode",
+				"type": "char"
+			},
+			{
+				"name": "Pricelist",
+				"type": "varchar"
+			},
+			{
+				"name": "Discount",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Shipment",
+				"type": "varchar"
+			},
+			{
+				"name": "IntTransportMethod",
+				"type": "varchar"
+			},
+			{
+				"name": "IntPort",
+				"type": "varchar"
+			},
+			{
+				"name": "IntSystem",
+				"type": "varchar"
+			},
+			{
+				"name": "IntTransA",
+				"type": "varchar"
+			},
+			{
+				"name": "IntStatNr",
+				"type": "varchar"
+			},
+			{
+				"name": "IntStandardCode",
+				"type": "varchar"
+			},
+			{
+				"name": "IntTransShipment",
+				"type": "varchar"
+			},
+			{
+				"name": "IntTransB",
+				"type": "varchar"
+			},
+			{
+				"name": "IntArea",
+				"type": "varchar"
+			},
+			{
+				"name": "IntLandISO",
+				"type": "varchar"
+			},
+			{
+				"name": "IntLandDestOrig",
+				"type": "varchar"
+			},
+			{
+				"name": "IntDeliveryMethod",
+				"type": "varchar"
+			},
+			{
+				"name": "IntStatUnit",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "IntWeight",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "IntComplete",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "LinkedLine",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "PayrollCosts",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "TaxCode2",
+				"type": "char"
+			},
+			{
+				"name": "TaxCode3",
+				"type": "char"
+			},
+			{
+				"name": "TaxCode4",
+				"type": "char"
+			},
+			{
+				"name": "TaxCode5",
+				"type": "char"
+			},
+			{
+				"name": "TaxBasis2",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TaxBasis3",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TaxBasis4",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TaxBasis5",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TaxAmount2",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TaxAmount3",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TaxAmount4",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TaxAmount5",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "StatisticalFactor",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "IntLandAssembly",
+				"type": "varchar"
+			},
+			{
+				"name": "backflush",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "LastReminderLayout",
+				"type": "varchar"
+			},
+			{
+				"name": "Correction",
+				"type": "char"
+			},
+			{
+				"name": "IBTDeliveryNr",
+				"type": "varchar"
+			},
+			{
+				"name": "Routing",
+				"type": "varchar"
+			},
+			{
+				"name": "Step",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Reasoncode",
+				"type": "varchar"
+			},
+			{
+				"name": "TransactionNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "Type",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "Status",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "UniqueSeqNo",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CompleteOperation",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "ImSerialNr",
+				"type": "varchar"
+			},
+			{
+				"name": "ImportationNr",
+				"type": "char"
+			},
+			{
+				"name": "RevaluationCurrency",
+				"type": "char"
+			},
+			{
+				"name": "LineType",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "Operation",
+				"type": "varchar"
+			},
+			{
+				"name": "ExternalNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "ExternalNumberRecordID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "RevaluationRate",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "PositionNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "StatementDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "StatementNumber",
+				"type": "char"
+			},
+			{
+				"name": "IntrastatEnabled",
+				"type": "bit"
+			},
+			{
+				"name": "AllocationType",
+				"type": "char"
+			},
+			{
+				"name": "OfficialExchangeRate",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "OfficialAmountDC",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "OfficialBasisDC",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "ScheduledResources",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ManualStartLock",
+				"type": "bit"
+			},
+			{
+				"name": "ManualStopLock",
+				"type": "bit"
+			},
+			{
+				"name": "FirmZoneLock",
+				"type": "bit"
+			},
+			{
+				"name": "Division",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "OperationQuantityComplete",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TaxDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "gbkmut"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

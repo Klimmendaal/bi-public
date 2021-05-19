@@ -1,0 +1,414 @@
+{
+	"name": "Patient",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_Hix",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/HIX"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "PATIENTNR",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ACHTERNAAM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VOORVOEGA",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MEISJESNAA",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VOORVOEGM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VOORLETTER",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ROEPNAAM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VOORNAAM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Pseudonym",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PseudonymEndDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "PronounCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TITELS",
+				"type": "nvarchar"
+			},
+			{
+				"name": "GESLACHT",
+				"type": "nvarchar"
+			},
+			{
+				"name": "GEBDAT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "GEBOORTETIJD",
+				"type": "nvarchar"
+			},
+			{
+				"name": "GEBDATCOR",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "GEBPLAATS",
+				"type": "nvarchar"
+			},
+			{
+				"name": "GEBLAND",
+				"type": "nvarchar"
+			},
+			{
+				"name": "INSTANTIE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MERGED",
+				"type": "bit"
+			},
+			{
+				"name": "Blok",
+				"type": "bit"
+			},
+			{
+				"name": "BSN",
+				"type": "nvarchar"
+			},
+			{
+				"name": "HUISARTS",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TANDARTS",
+				"type": "nvarchar"
+			},
+			{
+				"name": "APOTHEEK",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VERZVORM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "IDDATUM",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "IDTYPE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "IDNUMMER",
+				"type": "nvarchar"
+			},
+			{
+				"name": "WIDGELIJK",
+				"type": "bit"
+			},
+			{
+				"name": "WIDDATUM",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "BSNDATUM",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "EXTYPE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "EXDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "VERBLADRCODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "GEBDATRES",
+				"type": "nvarchar"
+			},
+			{
+				"name": "HOOFDVERZ",
+				"type": "nvarchar"
+			},
+			{
+				"name": "INGANGSDAT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "REKENINGNR",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DEBITEURNR",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BICCODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PATTYPE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PATCODES",
+				"type": "nvarchar"
+			},
+			{
+				"name": "UITGDATUM",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "OVERLEDEN",
+				"type": "bit"
+			},
+			{
+				"name": "OVERLDAT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "OVERLTIJD",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MEERLING",
+				"type": "bit"
+			},
+			{
+				"name": "EENLING",
+				"type": "bit"
+			},
+			{
+				"name": "MEMO",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BEREIKBAARHEID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BURGSTAAT",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TAAL",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RELIGIE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "GEESTVERZ",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PONSDAT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "PONSAANT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TMPREG",
+				"type": "bit"
+			},
+			{
+				"name": "MUTDAT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "MUTTIJD",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MUTWIE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "USERCODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MUTBRON",
+				"type": "nvarchar"
+			},
+			{
+				"name": "KOPPELNR",
+				"type": "nvarchar"
+			},
+			{
+				"name": "KOPPELSTAT",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ADRES",
+				"type": "nvarchar"
+			},
+			{
+				"name": "HUISNR",
+				"type": "nvarchar"
+			},
+			{
+				"name": "POSTCODE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "WOONPLAATS",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LAND",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PARTVERZ",
+				"type": "nvarchar"
+			},
+			{
+				"name": "AANVVERZ",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NRZIEKENFO",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NRPARTVERZ",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NRAANVVERZ",
+				"type": "nvarchar"
+			},
+			{
+				"name": "KLASSEZIEK",
+				"type": "nvarchar"
+			},
+			{
+				"name": "KLASSEPART",
+				"type": "nvarchar"
+			},
+			{
+				"name": "KLASSEAANV",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ZIEKENFOND",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NAAMGEBR",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SNTYPE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ExclWeb",
+				"type": "bit"
+			},
+			{
+				"name": "IsTestPatient",
+				"type": "bit"
+			},
+			{
+				"name": "GEBLANDV",
+				"type": "nvarchar"
+			},
+			{
+				"name": "GEBLANDM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "INGEZETENE",
+				"type": "nvarchar"
+			},
+			{
+				"name": "AFWIJKENDEFOTO",
+				"type": "nvarchar"
+			},
+			{
+				"name": "HEEFTAFWIJKFOTO",
+				"type": "bit"
+			},
+			{
+				"name": "TELEFOON1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TYPETEL1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TELEFOON2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TYPETEL2",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "PATIENT_PATIENT"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

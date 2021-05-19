@@ -1,0 +1,162 @@
+{
+	"name": "Feit_Formatie",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_az_bi",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "3_Datamarts/Personeel"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Medewerker_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Herkomst_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Leeftijd_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Instroom",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Uitstroom",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Dienstjaar_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Periode_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Begindatum_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Einddatum_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Kostenplaats_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Kostensoort_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Hoofdkostenplaats_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CAO_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Contracttype_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Medewerkersoort_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Functie_key",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Dienstverbandbegin",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Dienstverbandeind",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "FTEVast",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "FTERealisatie",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "FTEZwangerschapsverlof",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "FTEOuderschapsverlof",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "FTEGeboorteverlof",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "FTEOnbetaaldverlof",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "FTEMeeruren",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "FTEOproepuren",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "FTEOveruren",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "feit_formatieid",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "per",
+			"table": "feit_formatie"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,63 @@
+{
+	"name": "Ref_Postcode",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQLServer_az_bi",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "3_Datamarts/Referentie"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Postcode_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Postcode4",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Woonplaats",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Regio",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Gemeente",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Provincie",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Verzorgingsgebied",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Groep1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Groep2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Groep3",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "ref",
+			"table": "dim_postcode"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,51 @@
+{
+	"name": "Leeftijdsgroep",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Datalake2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/Referentie"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Leeftijdsgroep",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "referentie.xlsx",
+				"folderPath": "tabel referentie",
+				"fileSystem": "referentie"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Leeftijd",
+				"type": "String"
+			},
+			{
+				"name": "LeeftijdsgroepVernet",
+				"type": "String"
+			},
+			{
+				"name": "LeeftijdsgroepPatient",
+				"type": "String"
+			},
+			{
+				"name": "Groep1",
+				"type": "String"
+			},
+			{
+				"name": "Groep2",
+				"type": "String"
+			},
+			{
+				"name": "Groep3",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

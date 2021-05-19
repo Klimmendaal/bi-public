@@ -1,0 +1,47 @@
+{
+	"name": "formatiebegroting",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Datalake2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "1_Bronnen/Referentie"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Formatiebegroting",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "referentie.xlsx",
+				"folderPath": "tabel referentie",
+				"fileSystem": "referentie"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "kostenplaats",
+				"type": "String"
+			},
+			{
+				"name": "kostensoort",
+				"type": "String"
+			},
+			{
+				"name": "FTE begroot",
+				"type": "String"
+			},
+			{
+				"name": "begin",
+				"type": "String"
+			},
+			{
+				"name": "eind",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

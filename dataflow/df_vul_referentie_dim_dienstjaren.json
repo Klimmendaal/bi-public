@@ -1,0 +1,35 @@
+{
+	"name": "df_vul_referentie_dim_dienstjaren",
+	"properties": {
+		"folder": {
+			"name": "Referentie"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Dienstjaren",
+						"type": "DatasetReference"
+					},
+					"name": "dienstjaren"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Per_dienstjaren",
+						"type": "DatasetReference"
+					},
+					"name": "Refdienstjaren"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DCdienstjarenkey"
+				}
+			],
+			"script": "source(output(\n\t\tjaar as integer '000',\n\t\tmaand as integer '000',\n\t\tgroep1 as string,\n\t\tgroep2 as string,\n\t\tgroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> dienstjaren\ndienstjaren derive(Dienstjaar_key = concat(toString(jaar), '|',toString(maand))) ~> DCdienstjarenkey\nDCdienstjarenkey sink(input(\n\t\tDienstjaar_key as string,\n\t\tJaar as integer,\n\t\tMaand as integer,\n\t\tGroep1 as string,\n\t\tGroep2 as string,\n\t\tGroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tDienstjaar_key,\n\t\tJaar = jaar,\n\t\tMaand = maand,\n\t\tGroep1 = groep1,\n\t\tGroep2 = groep2,\n\t\tGroep3 = groep3\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Refdienstjaren"
+		}
+	}
+}

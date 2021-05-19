@@ -1,0 +1,31 @@
+{
+	"name": "df_vul_personeel_dim_functie",
+	"properties": {
+		"folder": {
+			"name": "Personeel"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "STG_AFAS_Kostensoort_functie",
+						"type": "DatasetReference"
+					},
+					"name": "AfasKostensoort"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Per_Functie",
+						"type": "DatasetReference"
+					},
+					"name": "DimFunctie"
+				}
+			],
+			"transformations": [],
+			"script": "source(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tSpecifieke_bron_code as string,\n\t\tSpecifieke_bron_omschrijving as string,\n\t\tVaste_waarde as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet',\n\twildcardPaths:['dim/kostensoortfunctie']) ~> AfasKostensoort\nAfasKostensoort sink(input(\n\t\tFunctie_key as string,\n\t\tFunctiecode as string,\n\t\tFunctieomschrijving as string,\n\t\tKostensoortcode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tFunctie_key = Specifieke_bron_code,\n\t\tFunctiecode = Specifieke_bron_code,\n\t\tFunctieomschrijving = Specifieke_bron_omschrijving,\n\t\tKostensoortcode = Vaste_waarde\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> DimFunctie"
+		}
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"name": "ls_SQLServer_Exact",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=AD-SQL01;initial catalog=001",
+			"userName": "gkld\\svc-azure-ls-exact",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIxOGE5MWFmZC0yMDUxLTQwMjUtYmMzYi0yMTlhZmQ2YzQwYjEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IR-SQL-Klimmendaal",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

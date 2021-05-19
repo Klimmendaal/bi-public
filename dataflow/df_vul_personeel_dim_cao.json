@@ -1,0 +1,41 @@
+{
+	"name": "df_vul_personeel_dim_cao",
+	"properties": {
+		"folder": {
+			"name": "Personeel"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "STG_AFAS_Loonverdeling",
+						"type": "DatasetReference"
+					},
+					"name": "CAO"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Per_CAO",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Select1"
+				},
+				{
+					"name": "Aggregate1"
+				},
+				{
+					"name": "DerivedColumn1"
+				}
+			],
+			"script": "source(output(\n\t\tskip as long,\n\t\ttake as long,\n\t\tMedewerker as string,\n\t\tDV_nr as long,\n\t\tDV_Begin as string,\n\t\tDV_Eind as string,\n\t\tVlgnr_contract as long,\n\t\tContr_Begin as string,\n\t\tContr_Eind as string,\n\t\tType_contract_code as string,\n\t\tType_contract as string,\n\t\tSoort_medewerker_code as string,\n\t\tSoort_Medewerker as string,\n\t\tDienstbetrekking_code as string,\n\t\tDienstbetrekking as string,\n\t\tFunctie_Begin as string,\n\t\tFunctie_Eind as string,\n\t\tHoofdkostenplaats as string,\n\t\tFormatie_Begin as string,\n\t\tFormatie_Eind as string,\n\t\tParttimePerc as double,\n\t\tUren_week as double,\n\t\tDagen_week as double,\n\t\tKostenplaats as string,\n\t\tOE as string,\n\t\tLoonv_perc as double,\n\t\tFunctie_code as string,\n\t\tFunctie_omschr as string,\n\t\tWerkgever_code as string,\n\t\tWerkgever_naam as string,\n\t\tSalaris_begin as string,\n\t\tSalaris_eind as string,\n\t\tCao_code_regeling as string,\n\t\tCAO_omschrijving as string,\n\t\tHoofd_Functie_code as string,\n\t\tHoofd_Functie_Omschr as string,\n\t\tArbeidsvoorwaarde_code as string,\n\t\tBegindatum_contractketen as string,\n\t\tBegindatum_organigram as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> CAO\nCAO select(mapColumn(\n\t\tCao_code_regeling,\n\t\tCAO_omschrijving\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 aggregate(groupBy(Cao_code_regeling,\n\t\tCAO_omschrijving),\n\tcolumn1 = count(Cao_code_regeling)) ~> Aggregate1\nAggregate1 derive(CAO_key = Cao_code_regeling) ~> DerivedColumn1\nDerivedColumn1 sink(input(\n\t\tCAO_key as integer,\n\t\tCAOcode as integer,\n\t\tCAOomschrijving as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tCAO_key,\n\t\tCAOcode = Cao_code_regeling,\n\t\tCAOomschrijving = CAO_omschrijving\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+		}
+	}
+}
