@@ -13,13 +13,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "excelpostcode"
-				},
-				{
-					"dataset": {
-						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference"
-					},
-					"name": "source1"
 				}
 			],
 			"sinks": [
@@ -32,7 +25,7 @@
 				}
 			],
 			"transformations": [],
-			"script": "source(output(\n\t\tPostcodeNummers as string,\n\t\tPlaats as string,\n\t\tGemeente as string,\n\t\tProvincie as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> excelpostcode\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nexcelpostcode sink(input(\n\t\tPostcode_key as integer,\n\t\tPostcode4 as integer,\n\t\tWoonplaats as string,\n\t\tRegio as string,\n\t\tGemeente as string,\n\t\tProvincie as string,\n\t\tVerzorgingsgebied as string,\n\t\tGroep1 as string,\n\t\tGroep2 as string,\n\t\tGroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tPostcode_key = PostcodeNummers,\n\t\tPostcode4 = PostcodeNummers,\n\t\tWoonplaats = Plaats,\n\t\tGemeente,\n\t\tProvincie\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> RefPostcode"
+			"script": "source(output(\n\t\tPostcodeNummers as string,\n\t\tPlaats as string,\n\t\tGemeente as string,\n\t\tProvincie as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> excelpostcode\nexcelpostcode sink(input(\n\t\tPostcode_key as integer,\n\t\tPostcode4 as integer,\n\t\tWoonplaats as string,\n\t\tRegio as string,\n\t\tGemeente as string,\n\t\tProvincie as string,\n\t\tVerzorgingsgebied as string,\n\t\tGroep1 as string,\n\t\tGroep2 as string,\n\t\tGroep3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tmapColumn(\n\t\tPostcode_key = PostcodeNummers,\n\t\tPostcode4 = PostcodeNummers,\n\t\tWoonplaats = Plaats,\n\t\tGemeente,\n\t\tProvincie\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> RefPostcode"
 		}
 	}
 }
